@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planet Store Boyolali | Pusat iPhone Bergaransi</title>
+    
+    <!-- Phosphor Icons for premium minimal icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        // Using Apple's native font stack for that authentic premium feel
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        black: '#000000',
+                        base: '#0a0a0c', 
+                        surface: '#1c1c1e',
+                        surfaceHover: '#2c2c2e',
+                        border: '#38383a',
+                        textMain: '#f5f5f7',
+                        textMuted: '#86868b',
+                        brand: '#0066cc', // Apple Blue
+                        accent: '#ff9500',
+                    },
+                    letterSpacing: {
+                        tightest: '-.04em',
+                        tighter: '-.02em',
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'glow-pulse': 'glowPulse 4s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        glowPulse: {
+                            '0%': { opacity: '0.3', transform: 'scale(1)' },
+                            '100%': { opacity: '0.6', transform: 'scale(1.1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #000000;
+            color: #f5f5f7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Elegant scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #38383a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #86868b; }
+
+        /* Apple-style Glassmorphism */
+        .glass-nav {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: linear-gradient(180deg, rgba(28,28,30,0.8) 0%, rgba(28,28,30,0.4) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Typography tweaks */
+        .sf-pro-rounded {
+            font-family: ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 40px rgba(255,255,255,0.4);
+        }
+
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+
+        /* Segmented control for catalog */
+        .segment-label {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        input[type="radio"]:checked + .segment-label {
+            background-color: #f5f5f7;
+            color: #000000;
+        }
+
+        /* Hide Number Input Arrows */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; margin: 0; 
+        }
+
+        /* Detail Modal Custom Overlay & Scale */
+        #modal-stock-detail.active-modal {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #modal-stock-detail.active-modal > div {
+            transform: scale(1) !important;
+        }
+    </style>
+</head>
+<body class="selection:bg-brand selection:text-white">
+
+    <!-- Ambient Background Blobs -->
+    <div class="fixed top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/20 blur-[120px] pointer-events-none z-0 animate-glow-pulse"></div>
+    <div class="fixed bottom-[-20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-brand/10 blur-[100px] pointer-events-none z-0" style="animation: glowPulse 5s ease-in-out infinite alternate-reverse;"></div>
+
+    <!-- Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 group">
+                <i class="ph-fill ph-apple-logo text-xl text-textMain group-hover:text-white transition-colors"></i>
+                <span class="font-semibold text-sm tracking-tight text-textMain group-hover:text-white transition-colors hidden sm:block">Planet Store.</span>
+            </a>
+            
+            <nav class="hidden md:flex items-center gap-8 text-[13px] font-medium text-textMuted">
+                <a href="#hero" class="hover:text-white transition-colors">Beranda</a>
+                <a href="#layanan" class="hover:text-white transition-colors">Layanan</a>
+                <a href="#stock" class="hover:text-white transition-colors">Katalog Unit</a>
+                <a href="#lokasi" class="hover:text-white transition-colors">Lokasi</a>
+            </nav>
+
+            <a href="https://wa.me/6289522994849" target="_blank" class="text-[13px] font-medium text-textMain bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-full transition-all flex items-center gap-2">
+                <i class="ph-fill ph-whatsapp-logo text-brand"></i> Tanya Admin
+            </a>
+        </div>
+    </header>
+
+    <main class="relative z-10">
+        <!-- Hero Section -->
+        <section id="hero" class="pt-32 pb-20 px-6 min-h-[90vh] flex flex-col items-center justify-center text-center max-w-5xl mx-auto">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-surface/50 text-[11px] font-medium text-textMuted uppercase tracking-widest mb-8 opacity-0 animate-fade-in-up">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                Pusat iPhone & Apple Device Boyolali
+            </div>
+
+            <h1 class="text-5xl md:text-7xl lg:text-[80px] font-bold tracking-tighter leading-[1.05] text-white mb-6 opacity-0 animate-fade-in-up delay-100 text-glow">
+                Upgrade iPhone.<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600">
+                    Nggak Harus Mahal.
+                </span>
+            </h1>
+
+            <p class="text-textMuted text-lg md:text-xl leading-relaxed max-w-2xl font-normal opacity-0 animate-fade-in-up delay-200 mb-10">
+                Pengen ganti iPhone tapi takut dapet barang zonk? Di Planet Store, semua unit udah lewat QC ketat. Mulus luar dalam, garansi jelas, dan pastinya aman dipakai jangka panjang. Bikin tenang.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center gap-4 opacity-0 animate-fade-in-up delay-300">
+                <a href="#stock" class="w-full sm:w-auto px-8 py-3.5 bg-textMain text-black hover:bg-white rounded-full text-[15px] font-semibold transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                    Cek Stock Ready <i class="ph-bold ph-arrow-down"></i>
+                </a>
+                <a href="#layanan" class="w-full sm:w-auto px-8 py-3.5 bg-surface hover:bg-surfaceHover border border-border text-white rounded-full text-[15px] font-medium transition-all flex items-center justify-center">
+                    Pelajari Layanan
+                </a>
+            </div>
+
+            <!-- Hero Image / Visual -->
+            <div class="mt-20 w-full max-w-4xl relative opacity-0 animate-fade-in-up delay-300">
+                <!-- A highly aesthetic representation of Titanium iPhones -->
+                <div class="aspect-[21/9] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl relative bg-surface">
+                    <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=1600&q=80" alt="iPhone 15 Pro Titanium" class="w-full h-full object-cover opacity-80 mix-blend-luminosity hover:opacity-100 transition-opacity duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 md:bottom-10 left-6 md:left-10 right-6 md:right-10 flex justify-between items-end">
+                        <div>
+                            <p class="text-white font-semibold text-lg md:text-2xl">iPhone 15 Pro</p>
+                            <p class="text-textMuted text-sm md:text-base">Titanium Alami. Kuat. Ringan.</p>
+                        </div>
+                        <p class="text-white/60 text-xs md:text-sm font-medium">Ready Stock</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="layanan" class="py-24 px-6 max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">Bukan Sekadar Jualan.</h2>
+                <p class="text-textMuted text-lg max-w-2xl mx-auto">Kita ngerti kebutuhanmu. Dari beli baru, tukar tambah, sampai benerin yang rusak, serahin aja ke ahlinya.</p>
+            </div>
+
+            <!-- Bento Grid Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[280px]">
+                
+                <!-- Card 1 (Large) -->
+                <div class="glass-card rounded-[2rem] p-8 md:col-span-2 group relative overflow-hidden flex flex-col justify-between hover:border-white/20 transition-colors">
+                    <div class="w-12 h-12 rounded-full bg-brand/20 text-brand flex items-center justify-center mb-4">
+                        <i class="ph-fill ph-arrows-left-right text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2 tracking-tight">Tukar Tambah Gampang.</h3>
+                        <p class="text-textMuted max-w-md leading-relaxed">HP Android atau iPhone lama kamu bisa banget jadi DP. Bawa ke toko, kita cek, dan hargai tinggi sesuai kondisinya. Nggak pakai ribet, langsung bawa pulang yang baru.</p>
+                    </div>
+                    <!-- Decorative element -->
+                    <i class="ph-fill ph-device-mobile absolute -right-6 -bottom-6 text-[150px] text-white/5 group-hover:text-white/10 transition-colors duration-500 transform -rotate-12"></i>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card rounded-[2rem] p-8 group relative overflow-hidden flex flex-col justify-between hover:border-white/20 transition-colors">
+                    <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center mb-4">
+                        <i class="ph-fill ph-wrench text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-2 tracking-tight">Servis Transparan.</h3>
+                        <p class="text-textMuted text-sm leading-relaxed">Baterai bocor atau LCD pecah? Dikerjakan rapi, cepat, dan pastinya bergaransi. Nggak ada drama bongkar di belakang.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card rounded-[2rem] p-8 group relative overflow-hidden flex flex-col justify-between hover:border-white/20 transition-colors">
+                    <div class="w-12 h-12 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center mb-4">
+                        <i class="ph-fill ph-camera-rotate text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-2 tracking-tight">Sewa Buat Ngonten.</h3>
+                        <p class="text-textMuted text-sm leading-relaxed">Mau nonton konser atau liburan tapi butuh kamera boba? Sewa harian aja di sini. Unit sehat, baterai awet, harga pelajar.</p>
+                    </div>
+                </div>
+
+                <!-- Card 4 (Large) -->
+                <div class="glass-card rounded-[2rem] p-8 md:col-span-2 group relative overflow-hidden flex flex-col justify-between hover:border-white/20 transition-colors bg-gradient-to-br from-surface to-[#112a1f]">
+                    <div class="w-12 h-12 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mb-4">
+                        <i class="ph-fill ph-shield-check text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2 tracking-tight">Garansi Anti Was-Was.</h3>
+                        <p class="text-textMuted max-w-md leading-relaxed">Beli second harus tetap tenang. IMEI aman, fungsi normal semua. Kalaupun ada kendala, klaim garansinya gampang banget. Tinggal bawa ke toko, kita urus sampai tuntas.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Catalog Section -->
+        <section id="stock" class="py-24 px-6 max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-12 border-b border-border pb-8">
+                <div>
+                    <h2 class="text-3xl md:text-5xl font-bold text-white tracking-tight mb-3">Pilih Jodohmu Hari Ini.</h2>
+                    <p class="text-textMuted text-base">Katalog stock terupdate. Harga jujur, kondisi sesuai deskripsi.</p>
+                </div>
+                
+                <!-- Apple-style segmented control -->
+                <div class="bg-surface p-1 rounded-xl inline-flex relative border border-border shadow-inner w-full md:w-auto">
+                    <input type="radio" name="filter" id="filter-all" class="hidden" checked onchange="filterStock('ALL')">
+                    <label for="filter-all" class="segment-label px-5 py-2 rounded-lg text-sm font-medium text-textMuted cursor-pointer flex-1 text-center">Semua</label>
+                    
+                    <input type="radio" name="filter" id="filter-ready" class="hidden" onchange="filterStock('TERSEDIA')">
+                    <label for="filter-ready" class="segment-label px-5 py-2 rounded-lg text-sm font-medium text-textMuted cursor-pointer flex-1 text-center">Ready Stock</label>
+                    
+                    <input type="radio" name="filter" id="filter-sold" class="hidden" onchange="filterStock('TERJUAL')">
+                    <label for="filter-sold" class="segment-label px-5 py-2 rounded-lg text-sm font-medium text-textMuted cursor-pointer flex-1 text-center">Terjual</label>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative w-full max-w-md mb-10 group">
+                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-textMuted text-lg group-focus-within:text-white transition-colors"></i>
+                <input type="text" id="stock-search" oninput="searchCatalog()" placeholder="Cari iPhone 13, Promax, Black..." 
+                    class="w-full bg-surface border border-border rounded-xl py-3 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand placeholder:text-textMuted transition-all">
+            </div>
+
+            <!-- Grid Catalog -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="catalog-grid">
+                <!-- Items will be injected here via JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-border bg-base pt-16 pb-8">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+                <!-- Brand Info -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="ph-fill ph-apple-logo text-2xl text-white"></i>
+                        <span class="font-bold text-lg text-white tracking-tight">Planet Store.</span>
+                    </div>
+                    <p class="text-textMuted text-sm leading-relaxed mb-6">
+                        Pusat retail iPhone baru dan second premium di Boyolali. Menjual kualitas, bukan sekadar janji.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="https://instagram.com" target="_blank" class="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-textMuted hover:text-white hover:bg-surfaceHover border border-border transition-all">
+                            <i class="ph-fill ph-instagram-logo text-xl"></i>
+                        </a>
+                        <a href="https://wa.me/6289522994849" target="_blank" class="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-textMuted hover:text-green-400 hover:bg-surfaceHover border border-border transition-all">
+                            <i class="ph-fill ph-whatsapp-logo text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Fast Links -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4 text-sm">Jelajahi</h4>
+                    <ul class="space-y-3 text-sm text-textMuted">
+                        <li><a href="#hero" class="hover:text-white transition-colors">Beranda</a></li>
+                        <li><a href="#layanan" class="hover:text-white transition-colors">Layanan Kami</a></li>
+                        <li><a href="#stock" class="hover:text-white transition-colors">Katalog iPhone</a></li>
+                        <li><a href="portal.html" class="hover:text-white transition-colors">Sistem Internal (POS)</a></li>
+                    </ul>
+                </div>
+
+                <!-- Location / Contact -->
+                <div id="lokasi">
+                    <h4 class="text-white font-semibold mb-4 text-sm">Hubungi Kami</h4>
+                    <ul class="space-y-3 text-sm text-textMuted">
+                        <li class="flex items-start gap-3">
+                            <i class="ph-fill ph-map-pin text-brand mt-0.5 text-lg"></i>
+                            <span>Jl. Pandanaran No. XX, Boyolali<br>(Seberang Alun-Alun)</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="ph-fill ph-clock text-brand text-lg"></i>
+                            <span>Buka Tiap Hari: 10.00 - 21.00 WIB</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="ph-fill ph-phone text-brand text-lg"></i>
+                            <span>0895-2299-4849</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center text-[13px] text-textMuted">
+                <p>&copy; 2026 Planet Store Boyolali. All rights reserved.</p>
+                <p class="mt-2 md:mt-0">Premium Apple Retailer Experience.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // High quality mock data
+        const MOCK_STOCK = [
+            { id: 'stk5', model: 'iPhone 15 Pro', capacity: '256GB', color: 'Natural Titanium', condition: 'BARU (BNIB)', selling_price: 21500000, status: 'TERSEDIA', notes: 'Garansi Resmi iBox 1 Tahun. Segel Greenpeel utuh.', photo: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80' },
+            { id: 'stk4', model: 'iPhone 14 Pro', capacity: '128GB', color: 'Deep Purple', condition: 'SECOND', selling_price: 13500000, status: 'TERSEDIA', notes: 'Baterai Health 95%. Fisik mulus 99% like new. Fullset ori.', photo: 'https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?auto=format&fit=crop&w=600&q=80' },
+            { id: 'stk3', model: 'iPhone 13', capacity: '128GB', color: 'Midnight', condition: 'SECOND', selling_price: 8500000, status: 'TERSEDIA', notes: 'BH 88% awet. Lulus 30+ titik QC (TrueTone on, FaceID lancar).', photo: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=600&q=80' },
+            { id: 'stk2', model: 'iPhone 12 Pro Max', capacity: '256GB', color: 'Pacific Blue', condition: 'SECOND', selling_price: 8900000, status: 'TERJUAL', notes: 'Laku keras! Chat admin buat tanya restock.', photo: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80' },
+            { id: 'stk1', model: 'iPhone 11', capacity: '64GB', color: 'Black', condition: 'SECOND', selling_price: 4200000, status: 'TERSEDIA', notes: 'Cocok buat entry level. Kamera masih jernih banget. BH 90%.', photo: 'https://images.unsplash.com/photo-1591337676887-a217a6970a8a?auto=format&fit=crop&w=600&q=80' }
+        ];
+
+        let catalogData = [];
+        let currentFilter = 'ALL';
+
+        function loadDatabase() {
+            // Coba ambil dari localstorage (jika terhubung dengan web admin)
+            const stored = localStorage.getItem('planet_store_jual_stock');
+            if (stored) {
+                catalogData = JSON.parse(stored);
+            } else {
+                catalogData = MOCK_STOCK;
+            }
+        }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+        }
+
+        function renderCatalog() {
+            const grid = document.getElementById('catalog-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            const query = document.getElementById('stock-search').value.toLowerCase();
+            
+            const filtered = catalogData.filter(item => {
+                const matchesFilter = currentFilter === 'ALL' || item.status === currentFilter;
+                const searchStr = `${item.model} ${item.color} ${item.capacity} ${item.condition}`.toLowerCase();
+                const matchesSearch = searchStr.includes(query);
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 flex flex-col items-center justify-center text-center">
+                        <i class="ph-light ph-package text-6xl text-border mb-4"></i>
+                        <h3 class="text-lg font-medium text-white mb-2">Unit Tidak Ditemukan</h3>
+                        <p class="text-textMuted text-sm">Coba cari dengan kata kunci lain atau ubah filter di atas.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const isSold = item.status === 'TERJUAL';
+                const waPhone = '6289522994849';
+                
+                // Copywriting for WA message
+                let waMessage = '';
+                if(isSold) {
+                    waMessage = `Halo min, saya tertarik sama *${item.model} ${item.capacity} ${item.color}* yang statusnya Sold Out. Kira-kira kapan restock lagi ya?`;
+                } else {
+                    waMessage = `Halo Planet Store, saya mau tanya unit *${item.model} ${item.capacity} ${item.color}* (${item.condition}) seharga ${formatRupiah(item.selling_price)}. Apakah masih ready?`;
+                }
+                const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}`;
+
+                // Handle image (support fallback)
+                const imgUrl = item.photo || 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=400&q=80';
+
+                const card = document.createElement('div');
+                card.className = `bg-surface border border-border rounded-2xl overflow-hidden group flex flex-col transition-all duration-300 hover:border-textMuted cursor-pointer ${isSold ? 'opacity-80' : ''}`;
+                
+                card.innerHTML = `
+                    <!-- Image Area -->
+                    <div class="relative aspect-square bg-[#111] overflow-hidden flex items-center justify-center">
+                        ${isSold 
+                            ? `<div class="absolute top-4 right-4 z-10 px-2.5 py-1 bg-black/80 backdrop-blur border border-white/10 rounded-md text-[10px] font-bold text-textMuted tracking-wider">SOLD OUT</div>` 
+                            : `<div class="absolute top-4 right-4 z-10 px-2.5 py-1 bg-white/10 backdrop-blur border border-white/20 rounded-md text-[10px] font-bold text-white tracking-wider">READY</div>`
+                        }
+                        
+                        <div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent z-0"></div>
+                        <img src="${imgUrl}" alt="${item.model}" class="w-full h-full object-cover mix-blend-luminosity group-hover:mix-blend-normal group-hover:scale-105 transition-all duration-500 z-0">
+                    </div>
+                    
+                    <!-- Content Area -->
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-[10px] font-semibold text-brand px-2 py-0.5 bg-brand/10 rounded uppercase tracking-wide">${item.condition}</span>
+                            <span class="text-[11px] font-medium text-textMuted">${item.capacity}</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-semibold text-white tracking-tight mb-1 line-clamp-1">${item.model}</h3>
+                        <p class="text-sm text-textMuted mb-3">${item.color}</p>
+                        
+                        <p class="text-xs text-textMuted line-clamp-2 leading-relaxed mb-4 flex-1">
+                            ${item.notes || 'Kondisi mulus, fungsi normal 100%. Lulus Quality Control.'}
+                        </p>
+                        
+                        <div class="pt-4 border-t border-border mt-auto flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] text-textMuted uppercase tracking-wider mb-0.5">Harga</p>
+                                <p class="text-base font-semibold text-white sf-pro-rounded tracking-tight">${formatRupiah(item.selling_price || 0)}</p>
+                            </div>
+                            
+                            <a href="${waLink}" target="_blank" class="w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isSold ? 'bg-surfaceHover text-textMuted hover:bg-border' : 'bg-white text-black hover:bg-gray-200'}">
+                                <i class="ph-fill ph-whatsapp-logo text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                // Open modal on click unless clicking WA button
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('a')) return;
+                    openDetailModal(item);
+                });
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function openDetailModal(item) {
+            const modal = document.getElementById('modal-stock-detail');
+            const body = document.getElementById('msd-body');
+            const waBtn = document.getElementById('msd-wa-btn');
+            
+            const isSold = item.status === 'TERJUAL';
+            const priceFormatted = formatRupiah(item.selling_price || 0);
+            
+            const waPhone = '6289522994849';
+            let waMessage = '';
+            if(isSold) {
+                waMessage = `Halo min, saya tertarik sama *${item.model} ${item.capacity} ${item.color}* yang statusnya Sold Out. Kira-kira kapan restock lagi ya?`;
+            } else {
+                waMessage = `Halo Planet Store, saya mau tanya unit *${item.model} ${item.capacity} ${item.color}* (${item.condition}) seharga ${priceFormatted}. Apakah masih ready?`;
+            }
+            
+            waBtn.href = `https://wa.me/${waPhone}?text=${encodeURIComponent(waMessage)}`;
+            waBtn.innerHTML = isSold 
+                ? `<i class="ph-bold ph-whatsapp-logo text-sm"></i> Request Unit Serupa`
+                : `<i class="ph-bold ph-whatsapp-logo text-sm"></i> Hubungi Admin via WA`;
+            
+            if(isSold) {
+                waBtn.className = "flex-[2] py-3 bg-surfaceHover hover:bg-border border border-border text-white rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5";
+            } else {
+                waBtn.className = "flex-[2] py-3 bg-brand hover:bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-brand/10 transition-all text-center flex items-center justify-center gap-1.5";
+            }
+
+            const imgUrl = item.photo || 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=400&q=80';
+            
+            body.innerHTML = `
+                <div class="space-y-4">
+                    <!-- Photo -->
+                    <div class="aspect-video w-full rounded-2xl overflow-hidden bg-[#000] border border-border">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <!-- Title Details -->
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] font-semibold text-brand px-2 py-0.5 bg-brand/10 rounded uppercase tracking-wide">${item.condition}</span>
+                            ${item.grade && item.grade !== '-' ? `<span class="text-[10px] font-semibold text-accent px-2 py-0.5 bg-accent/10 rounded uppercase tracking-wide">Grade ${item.grade}</span>` : ''}
+                            <span class="px-2.5 py-0.5 ${isSold ? 'bg-black/60 text-textMuted border border-border' : 'bg-success/10 text-success border border-success/20'} rounded-md text-[10px] font-bold uppercase tracking-wider">${isSold ? 'Sold Out' : 'Ready Stock'}</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white tracking-tight">${item.model}</h2>
+                        <p class="text-textMuted text-xs font-medium">${item.color} · ${item.capacity}</p>
+                    </div>
+
+                    <!-- Tech Specs Table -->
+                    <div class="border border-border rounded-xl overflow-hidden text-xs bg-black/40">
+                        <div class="grid grid-cols-2 p-3 border-b border-border">
+                            <span class="text-textMuted">Kapasitas</span>
+                            <span class="text-white font-medium text-right">${item.capacity}</span>
+                        </div>
+                        <div class="grid grid-cols-2 p-3 border-b border-border">
+                            <span class="text-textMuted">Warna</span>
+                            <span class="text-white font-medium text-right">${item.color}</span>
+                        </div>
+                        <div class="grid grid-cols-2 p-3 border-b border-border">
+                            <span class="text-textMuted">Kondisi</span>
+                            <span class="text-white font-medium text-right uppercase">${item.condition}</span>
+                        </div>
+                        <div class="grid grid-cols-2 p-3 border-b border-border">
+                            <span class="text-textMuted">IMEI Perangkat</span>
+                            <span class="text-white font-mono font-medium text-right">${item.imei ? item.imei.slice(0,6) + '**********' : 'Terdaftar Kemenperin'}</span>
+                        </div>
+                        <div class="grid grid-cols-2 p-3 border-b border-border">
+                            <span class="text-textMuted">Kelengkapan</span>
+                            <span class="text-white font-medium text-right">${item.kelengkapan || 'Box + Charger (Fullset)'}</span>
+                        </div>
+                        <div class="grid grid-cols-2 p-3">
+                            <span class="text-textMuted">Garansi Resmi Toko</span>
+                            <span class="text-success font-medium text-right">30 Hari (IMEI Lifetime)</span>
+                        </div>
+                    </div>
+
+                    <!-- Catatan Fisik -->
+                    <div class="space-y-1">
+                        <span class="text-[10px] text-textMuted font-bold uppercase tracking-wider">Deskripsi & Catatan QC</span>
+                        <p class="text-xs text-textMain leading-relaxed p-3 bg-black/20 rounded-xl border border-border">
+                            ${item.notes || 'Fungsi normal 100%. Lulus 30+ parameter QC ketat. iCloud bersih bebas reset, TrueTone & FaceID lancar.'}
+                        </p>
+                    </div>
+
+                    <!-- Rental Integration -->
+                    <div class="p-3.5 bg-brand/5 border border-brand/10 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-brand">
+                            <i class="ph-fill ph-calendar-check text-lg"></i>
+                            <span class="text-xs font-semibold text-white">Ingin sewa harian saja?</span>
+                        </div>
+                        <span class="text-[11px] text-textMuted">Mulai <strong class="text-brand font-bold">Rp 75.000/hari</strong></span>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.add('active-modal');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('modal-stock-detail').classList.remove('active-modal');
+        }
+
+        function filterStock(status) {
+            currentFilter = status;
+            renderCatalog();
+        }
+
+        function searchCatalog() {
+            renderCatalog();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDatabase();
+            renderCatalog();
+            
+            // Close modal when clicking outside content area
+            const modal = document.getElementById('modal-stock-detail');
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeDetailModal();
+            });
+        });
+    </script>
+    
+    <!-- Detail Stock Modal markup -->
+    <div id="modal-stock-detail" class="fixed inset-0 z-50 glass-nav flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass-card rounded-[2rem] max-w-md w-full overflow-hidden flex flex-col max-h-[90vh] scale-95 transition-all duration-300">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-border flex justify-between items-center bg-surface">
+                <h3 class="font-bold text-white text-sm tracking-tight sf-pro-rounded uppercase tracking-widest text-[11px] text-textMuted">Katalog Planet Store</h3>
+                <button onclick="closeDetailModal()" class="text-textMuted hover:text-white text-base">✕</button>
+            </div>
+            <!-- Body -->
+            <div class="p-6 overflow-y-auto flex-1 space-y-6" id="msd-body">
+                <!-- Dynamic Content Injected Here -->
+            </div>
+            <!-- Footer Actions -->
+            <div class="p-6 border-t border-border bg-base flex gap-3">
+                <button onclick="closeDetailModal()" class="flex-1 py-3 bg-surface hover:bg-surfaceHover border border-border text-white rounded-xl text-xs font-bold transition-all">
+                    Tutup
+                </button>
+                <a id="msd-wa-btn" href="#" target="_blank" class="flex-[2] py-3 bg-brand hover:bg-blue-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-brand/10 transition-all text-center flex items-center justify-center gap-1.5">
+                    <i class="ph-bold ph-whatsapp-logo text-sm"></i> Hubungi Admin
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

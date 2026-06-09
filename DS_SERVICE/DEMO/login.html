@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Sistem — Planet Store Boyolali</title>
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/jpeg" href="../../BRANDING_KIT/LOGO.jpg">
+    <style>
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: var(--bg-dark);
+        }
+
+        .login-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-soft);
+            width: 100%;
+            max-width: 440px;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .login-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 2px solid var(--accent-orange);
+            margin-bottom: 20px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .shortcut-accounts {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-soft);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+        }
+
+        .shortcut-accounts h4 {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .shortcut-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-shortcut {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-soft);
+            background: var(--bg-surface);
+            color: var(--text-body);
+            transition: var(--transition-fast);
+        }
+
+        .btn-shortcut:hover {
+            background: var(--bg-surface-hover);
+            color: var(--text-title);
+            border-color: var(--primary-purple);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            
+            <img src="../../BRANDING_KIT/LOGO.jpg" alt="Logo" class="login-logo">
+            
+            <div class="login-header">
+                <h2>Planet Store</h2>
+                <p>Sistem Servis HP — Boyolali</p>
+            </div>
+
+            <form id="form-login" style="width: 100%;">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Masukkan username" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 32px;">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Masukkan password" required>
+                </div>
+
+                <button type="submit" class="btn btn-cta" style="width: 100%; padding: 14px;">Masuk ke Dashboard</button>
+            </form>
+
+            <div class="shortcut-accounts">
+                <h4>Simulasi Login Cepat</h4>
+                <div class="shortcut-buttons">
+                    <button class="btn-shortcut" id="btn-login-admin">Akses Admin</button>
+                    <button class="btn-shortcut" id="btn-login-tech">Akses Teknisi</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Script for handling login simulation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const formLogin = document.getElementById('form-login');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            
+            const btnAdmin = document.getElementById('btn-login-admin');
+            const btnTech = document.getElementById('btn-login-tech');
+
+            // Quick Login handlers
+            btnAdmin.addEventListener('click', () => {
+                usernameInput.value = 'admin';
+                passwordInput.value = '123';
+                formLogin.dispatchEvent(new Event('submit'));
+            });
+
+            btnTech.addEventListener('click', () => {
+                usernameInput.value = 'rian';
+                passwordInput.value = 'rian123';
+                formLogin.dispatchEvent(new Event('submit'));
+            });
+
+            formLogin.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = usernameInput.value.trim().toLowerCase();
+                const password = passwordInput.value;
+
+                // Load technicians from localStorage or fallback
+                let techs = [];
+                try {
+                    techs = JSON.parse(localStorage.getItem('planet_store_service_technicians')) || [];
+                } catch (err) {}
+                
+                // Fallback if not initialized yet
+                if (techs.length === 0) {
+                    techs = [
+                        { name: 'Rian', password: 'rian123' },
+                        { name: 'Dani', password: 'dani123' },
+                        { name: 'Bagas', password: 'bagas123' }
+                    ];
+                }
+
+                const matchedTech = techs.find(t => t.name.toLowerCase() === username && t.password === password);
+
+                if (username === 'admin' && password === '123') {
+                    // Save admin session
+                    sessionStorage.setItem('active_user', JSON.stringify({
+                        username: 'admin',
+                        name: 'Administrator',
+                        role: 'ADMIN'
+                    }));
+                    window.location.href = 'index.html';
+                } else if (username === 'teknisi' && password === '123') {
+                    // Quick legacy technician login (defaults to Rian)
+                    sessionStorage.setItem('active_user', JSON.stringify({
+                        username: 'rian',
+                        name: 'Rian',
+                        role: 'TEKNISI'
+                    }));
+                    window.location.href = 'index.html';
+                } else if (matchedTech) {
+                    // Save matched technician session
+                    sessionStorage.setItem('active_user', JSON.stringify({
+                        username: matchedTech.name.toLowerCase(),
+                        name: matchedTech.name,
+                        role: 'TEKNISI'
+                    }));
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Username atau password salah!\n(Admin: admin/123, Teknisi: rian/rian123, dani/dani123, bagas/bagas123)');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

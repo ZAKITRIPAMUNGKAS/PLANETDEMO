@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Servis — Planet Store Boyolali</title>
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/jpeg" href="../../BRANDING_KIT/LOGO.jpg">
+    <script>
+        // Check active session before rendering body
+        const activeUser = sessionStorage.getItem('active_user');
+        if (!activeUser) {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+<body>
+
+    <!-- App Shell Container -->
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="../../BRANDING_KIT/LOGO.jpg" alt="Logo Planet Store" class="brand-logo-img">
+                <div class="brand-info">
+                    <h1>Planet Store</h1>
+                    <span>Boyolali · Service</span>
+                </div>
+            </div>
+            
+            <nav style="margin-top: 20px;">
+                <ul class="nav-menu">
+                    <li class="nav-item active" data-tab="overview">
+                        <a href="javascript:void(0)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg> Ringkasan Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item" data-tab="tickets">
+                        <a href="javascript:void(0)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Daftar Antrian Servis
+                        </a>
+                    </li>
+                    <li class="nav-item" data-tab="parts">
+                        <a href="javascript:void(0)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> Manajemen Sparepart & Stok
+                        </a>
+                    </li>
+                    <li class="nav-item" data-tab="techs">
+                        <a href="javascript:void(0)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Manajemen Teknisi
+                        </a>
+                    </li>
+                    <li class="nav-item" data-tab="mutations" id="tab-mutations-link">
+                        <a href="javascript:void(0)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Mutasi Keuangan
+                        </a>
+                    </li>
+                    <li class="nav-item-divider" style="border-top: 1px solid var(--border-soft); margin: 12px 16px;"></li>
+                    <li class="nav-item">
+                        <a href="tracking.html" target="_blank">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Pelacakan Customer
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p>Planet Store v1.0</p>
+                <p style="font-size: 0.65rem; margin-top: 4px;">Pusat HP Murah & Bergaransi</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Panel -->
+        <main class="main-content">
+            
+            <!-- Top Header Bar -->
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h2>Manajemen Antrian Servis</h2>
+                    <p>Planet Store Boyolali — Pusatnya HP Murah & Bergaransi</p>
+                </div>
+                <div class="topbar-actions">
+                    <span id="user-display" style="font-size:0.82rem; color:var(--text-muted); background:var(--bg-dark); border:1px solid var(--border-soft); padding:8px 14px; border-radius:8px; font-weight:600;"></span>
+                    <button class="btn btn-secondary" id="btn-export-excel" style="padding: 8px 12px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; stroke: #10B981;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Excel
+                    </button>
+                    <button class="btn btn-secondary" id="btn-print-pdf" style="padding: 8px 12px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px; stroke: #3B82F6;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        PDF
+                    </button>
+                    <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;" id="btn-logout">Keluar</button>
+                    <button class="btn btn-cta" id="btn-open-create">
+                        <span style="font-size:1.1rem; line-height:0;">+</span> Buat Tiket Servis
+                    </button>
+                </div>
+            </header>
+
+            <!-- KPI Cards Grid -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Tiket Aktif</span>
+                        <span class="kpi-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        </span>
+                    </div>
+                    <div class="kpi-value" id="kpi-total-active">0</div>
+                    <div class="kpi-footer">Sedang dalam pengerjaan</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Menunggu ACC</span>
+                        <span class="kpi-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </span>
+                    </div>
+                    <div class="kpi-value" id="kpi-waiting-acc" style="color: var(--status-menunggu-acc);">0</div>
+                    <div class="kpi-footer">Menunggu konfirmasi biaya</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Selesai Hari Ini</span>
+                        <span class="kpi-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </span>
+                    </div>
+                    <div class="kpi-value" id="kpi-completed-today" style="color: var(--status-selesai);">0</div>
+                    <div class="kpi-footer">Berhasil diselesaikan hari ini</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Stok Part Kritis</span>
+                        <span class="kpi-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </span>
+                    </div>
+                    <div class="kpi-value" id="kpi-low-stock" style="color: var(--status-dibatalkan);">0</div>
+                    <div class="kpi-footer">Stok sparepart menipis</div>
+                </div>
+            </section>
+
+            <!-- Tab Content Switch Areas (Tab-nav removed) -->
+            <!-- Tab 0: Ringkasan Dashboard (Landing Overview) -->
+            <div class="tab-content active" id="tab-content-overview">
+                <!-- Section 1: Profit Hari Ini Hero Banner -->
+                <div class="profit-hero-grid">
+                    <div class="profit-hero-card">
+                        <div class="profit-hero-icon income-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                        </div>
+                        <div>
+                            <div class="profit-hero-label">Pemasukan Hari Ini</div>
+                            <div class="profit-hero-value" id="ov-today-income">Rp 0</div>
+                            <div class="profit-hero-sub" id="ov-today-income-count">0 transaksi masuk</div>
+                        </div>
+                    </div>
+                    <div class="profit-hero-card">
+                        <div class="profit-hero-icon expense-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+                        </div>
+                        <div>
+                            <div class="profit-hero-label">Pengeluaran Hari Ini</div>
+                            <div class="profit-hero-value" id="ov-today-expense">Rp 0</div>
+                            <div class="profit-hero-sub" id="ov-today-expense-count">0 transaksi keluar</div>
+                        </div>
+                    </div>
+                    <div class="profit-hero-card profit-highlight">
+                        <div class="profit-hero-icon net-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </div>
+                        <div>
+                            <div class="profit-hero-label">Profit Bersih Hari Ini</div>
+                            <div class="profit-hero-value" id="ov-today-profit">Rp 0</div>
+                            <div class="profit-hero-sub">Pemasukan − Pengeluaran</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: KPI Metrics Grid (6 cards) -->
+                <div class="kpi-grid kpi-grid-6" style="margin-bottom: 24px;">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Pendapatan Jasa Bersih</span>
+                            <span class="kpi-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-value" id="ov-net-revenue" style="color: var(--status-diambil);">Rp 0</div>
+                        <div class="kpi-footer">Estimasi biaya - harga beli sparepart</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Tingkat Keberhasilan</span>
+                            <span class="kpi-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-value" id="ov-success-rate" style="color: var(--status-selesai);">0%</div>
+                        <div class="kpi-footer">Servis selesai vs dibatalkan</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Teknisi Terbaik</span>
+                            <span class="kpi-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-value" id="ov-top-tech" style="font-size: 1.5rem; margin-top: 4px; font-weight: 700;">-</div>
+                        <div class="kpi-footer">Berdasarkan rating & produktivitas</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Pemanfaatan Arus Kas</span>
+                            <span class="kpi-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-value" id="ov-cash-utilization" style="color: var(--primary-purple);">0%</div>
+                        <div class="kpi-footer">Persentase pengeluaran / pemasukan</div>
+                    </div>
+                    <div class="kpi-card" id="ov-overdue-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Tiket Overdue</span>
+                            <span class="kpi-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-value" id="ov-overdue-count" style="color: var(--status-dibatalkan);">0</div>
+                        <div class="kpi-footer">Melebihi estimasi tanggal selesai</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Rata-rata Waktu Servis</span>
+                            <span class="kpi-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-value" id="ov-avg-service-time" style="color: var(--primary-purple);">-</div>
+                        <div class="kpi-footer">Dari diterima sampai selesai</div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Charts & Insights Layout -->
+                <div style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 24px; margin-bottom: 24px;">
+                    <!-- Left: Arus Kas Chart -->
+                    <div class="table-container" style="padding: 24px; margin-bottom: 0; display: flex; flex-direction: column;">
+                        <h3 style="font-size: 1.15rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; stroke: var(--primary-purple);"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                            Grafik Keuntungan Bersih Harian (7 Hari)
+                        </h3>
+                        <div style="position: relative; flex: 1; min-height: 260px;" id="overview-chart-wrapper">
+                            <!-- Dynamic SVG chart injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Payment Breakdown + Repeat Customers -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <!-- Payment Breakdown Donut -->
+                        <div class="table-container" style="padding: 24px; margin-bottom: 0;">
+                            <h3 style="font-size: 1.05rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; stroke: var(--accent-orange);"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/><line x1="12" y1="12" x2="12" y2="2"/><line x1="12" y1="12" x2="22" y2="12"/></svg>
+                                Breakdown Metode Pembayaran
+                            </h3>
+                            <div id="ov-payment-breakdown" style="min-height: 180px;"></div>
+                        </div>
+
+                        <!-- Repeat Customers -->
+                        <div class="table-container" style="padding: 24px; margin-bottom: 0;">
+                            <h3 style="font-size: 1.05rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; stroke: var(--status-selesai);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                Pelanggan Berulang
+                            </h3>
+                            <div id="ov-repeat-customers" style="font-size: 0.85rem;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Kinerja Teknisi Comparison -->
+                <div class="table-container" style="padding: 24px; margin-bottom: 24px;">
+                    <h3 style="font-size: 1.15rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; stroke: var(--primary-purple);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Perbandingan Kinerja Teknisi
+                    </h3>
+                    <div id="ov-tech-performance"></div>
+                </div>
+
+                <!-- Section 5: Overdue Tiket Detail (shown dynamically) -->
+                <div class="table-container" id="ov-overdue-section" style="padding: 24px; margin-bottom: 24px; display: none;">
+                    <h3 style="font-size: 1.05rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; color: var(--status-dibatalkan);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        Tiket Melebihi Estimasi
+                    </h3>
+                    <div id="ov-overdue-list"></div>
+                </div>
+
+
+            </div>
+
+            <div class="tab-content" id="tab-content-tickets">
+                <div class="table-container">
+                    <div class="table-header-bar">
+                        <div class="search-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="admin-search" placeholder="Cari nama, no tiket, tipe HP...">
+                        </div>
+                        <div class="filter-wrapper">
+                            <select id="filter-status" class="filter-select">
+                                <option value="ALL">Semua Status</option>
+                                <option value="DITERIMA">Diterima</option>
+                                <option value="DIAGNOSA">Diagnosa</option>
+                                <option value="MENUNGGU_ACC">Menunggu ACC</option>
+                                <option value="MENUNGGU_PART">Menunggu Part</option>
+                                <option value="PROSES">Proses Perbaikan</option>
+                                <option value="QC_TESTING">QC / Testing</option>
+                                <option value="SELESAI">Selesai</option>
+                                <option value="DIAMBIL">Diambil / Lunas</option>
+                                <option value="DIBATALKAN">Dibatalkan</option>
+                            </select>
+                            
+                            <select id="filter-priority" class="filter-select">
+                                <option value="ALL">Semua Prioritas</option>
+                                <option value="NORMAL">Normal</option>
+                                <option value="EXPRESS">Express</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>No Tiket</th>
+                                <th>Nama Pelanggan</th>
+                                <th>Perangkat</th>
+                                <th>Prioritas</th>
+                                <th>Teknisi</th>
+                                <th>Status</th>
+                                <th>Estimasi Selesai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticket-table-body">
+                            <!-- Populated dynamically via admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 2: Spareparts Inventory -->
+            <div class="tab-content" id="tab-content-parts">
+                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:24px;">
+                    <!-- Sparepart Table -->
+                    <div class="table-container" style="margin-bottom:0;">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama Sparepart</th>
+                                    <th>Kompatibilitas</th>
+                                    <th>Harga Beli</th>
+                                    <th>Harga Jual</th>
+                                    <th>Stok</th>
+                                    <th>Supplier</th>
+                                </tr>
+                            </thead>
+                            <tbody id="parts-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Sparepart Alert Box -->
+                    <div>
+                        <h3 style="font-size: 1.1rem; margin-bottom:12px;">Pemberitahuan Stok</h3>
+                        <div id="low-stock-warnings">
+                            <!-- Low stock notifications injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Technicians Management -->
+            <div class="tab-content" id="tab-content-techs">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h3 style="font-size: 1.25rem;">Daftar Teknisi Aktif</h3>
+                    <button class="btn btn-primary" id="btn-open-create-tech" style="padding: 8px 16px; font-size: 0.85rem;">+ Tambah Teknisi</button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;" id="tech-cards-grid">
+                    <!-- Populated dynamically via admin.js -->
+                </div>
+            </div>
+
+            <!-- Tab 4: Financial Mutations -->
+            <div class="tab-content" id="tab-content-mutations">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h3 style="font-size: 1.25rem;">Buku Ledger Aliran Kas (SM-01)</h3>
+                    <button class="btn btn-cta" id="btn-open-create-mutation" style="padding: 8px 16px; font-size: 0.85rem;">+ Catat Kas Manual</button>
+                </div>
+                
+                <!-- Financial Summary Cards -->
+                <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 24px;">
+                    <div class="kpi-card" style="padding: 20px;">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Total Kas Masuk</span>
+                        </div>
+                        <div class="kpi-value" id="fin-total-in" style="color:var(--status-selesai); font-size: 1.6rem;">Rp 0</div>
+                    </div>
+                    <div class="kpi-card" style="padding: 20px;">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Total Kas Keluar</span>
+                        </div>
+                        <div class="kpi-value" id="fin-total-out" style="color:var(--status-dibatalkan); font-size: 1.6rem;">Rp 0</div>
+                    </div>
+                    <div class="kpi-card" style="padding: 20px;">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Saldo Bersih</span>
+                        </div>
+                        <div class="kpi-value" id="fin-net-balance" style="color:var(--text-title); font-size: 1.6rem;">Rp 0</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Ref Transaksi</th>
+                                <th>Tipe</th>
+                                <th>Kategori</th>
+                                <th>Nominal</th>
+                                <th>Metode</th>
+                                <th>Keterangan</th>
+                                <th>Admin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mutations-table-body">
+                            <!-- Populated dynamically via admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ==========================================================================
+       MODALS SECTION
+       ========================================================================== -->
+
+    <!-- Modal 1: Create Ticket Form -->
+    <div class="modal-overlay" id="modal-create">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Buat Tiket Servis Baru</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="form-create-ticket" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+                <div class="modal-body" style="overflow-y: auto; flex: 1;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cust-name">Nama Pelanggan *</label>
+                            <input type="text" id="cust-name" class="form-control" placeholder="Nama lengkap customer" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cust-phone">No. WhatsApp *</label>
+                            <input type="tel" id="cust-phone" class="form-control" placeholder="Contoh: 08951234567" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="device-model">Model Device *</label>
+                            <input type="text" id="device-model" class="form-control" placeholder="Contoh: iPhone 12 Pro Max" list="iphone-models" required>
+                            <datalist id="iphone-models">
+                                <option value="iPhone X"></option>
+                                <option value="iPhone XR"></option>
+                                <option value="iPhone XS"></option>
+                                <option value="iPhone XS Max"></option>
+                                <option value="iPhone 11"></option>
+                                <option value="iPhone 11 Pro"></option>
+                                <option value="iPhone 11 Pro Max"></option>
+                                <option value="iPhone SE (2020)"></option>
+                                <option value="iPhone 12 mini"></option>
+                                <option value="iPhone 12"></option>
+                                <option value="iPhone 12 Pro"></option>
+                                <option value="iPhone 12 Pro Max"></option>
+                                <option value="iPhone 13 mini"></option>
+                                <option value="iPhone 13"></option>
+                                <option value="iPhone 13 Pro"></option>
+                                <option value="iPhone 13 Pro Max"></option>
+                                <option value="iPhone SE (2022)"></option>
+                                <option value="iPhone 14"></option>
+                                <option value="iPhone 14 Plus"></option>
+                                <option value="iPhone 14 Pro"></option>
+                                <option value="iPhone 14 Pro Max"></option>
+                                <option value="iPhone 15"></option>
+                                <option value="iPhone 15 Plus"></option>
+                                <option value="iPhone 15 Pro"></option>
+                                <option value="iPhone 15 Pro Max"></option>
+                                <option value="iPhone 16"></option>
+                                <option value="iPhone 16 Plus"></option>
+                                <option value="iPhone 16 Pro"></option>
+                                <option value="iPhone 16 Pro Max"></option>
+                            </datalist>
+                        </div>
+                        <div class="form-group">
+                            <label for="device-imei">Nomor IMEI</label>
+                            <input type="text" id="device-imei" class="form-control" placeholder="15 digit nomor IMEI (opsional)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="complaint">Keluhan Kerusakan *</label>
+                        <textarea id="complaint" class="form-control" rows="3" placeholder="Jelaskan masalah device secara rinci..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="condition">Kondisi Fisik Saat Masuk</label>
+                        <input type="text" id="condition" class="form-control" placeholder="Contoh: Layar baret wajar, casing casing dent">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="technician">Teknisi Penanggung Jawab</label>
+                            <select id="technician" class="form-control">
+                                <!-- Injected dynamically via database technicians list -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="priority">Prioritas Servis</label>
+                            <select id="priority" class="form-control">
+                                <option value="NORMAL">Normal</option>
+                                <option value="EXPRESS">Express</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="est-date">Estimasi Tanggal Selesai</label>
+                            <input type="date" id="est-date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="est-cost">Estimasi Awal Biaya (Rp)</label>
+                            <input type="text" id="est-cost" class="form-control" placeholder="Rp" inputmode="numeric">
+                        </div>
+                    </div>
+
+                    <!-- Password / Lock Security Credentials -->
+                    <div style="border-top:1px dashed var(--border-color); margin-top:20px; padding-top:16px;">
+                        <h4 style="font-size:0.9rem; margin-bottom:12px; color:var(--text-title);">Pengaman & Kredensial Unit</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="create-lock-type">Jenis Kunci Layar</label>
+                                <select id="create-lock-type" class="form-control">
+                                    <option value="NONE">Tanpa Kunci (None)</option>
+                                    <option value="PIN">Kode PIN (Angka)</option>
+                                    <option value="PATTERN">Pola Gambar (Pattern)</option>
+                                    <option value="PASSWORD">Kata Sandi (Password)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="position: relative;">
+                                <label for="create-lock-code">Sandi / Pola Kunci</label>
+                                <input type="text" id="create-lock-code" class="form-control" placeholder="Sandi atau urutan nomor pola (misal: 12589)">
+                                <div id="pattern-draw-container" style="display:none; margin-top: 10px; padding: 10px; background: var(--bg-dark); border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Gambar Pola pada Grid 3x3 di bawah:</div>
+                                    <div style="display: grid; grid-template-columns: repeat(3, 50px); gap: 10px; justify-content: center; margin: 0 auto; width: 170px;" id="pattern-lock-grid">
+                                        <div class="pattern-node" data-node="1" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">1</div>
+                                        <div class="pattern-node" data-node="2" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">2</div>
+                                        <div class="pattern-node" data-node="3" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">3</div>
+                                        <div class="pattern-node" data-node="4" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">4</div>
+                                        <div class="pattern-node" data-node="5" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">5</div>
+                                        <div class="pattern-node" data-node="6" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">6</div>
+                                        <div class="pattern-node" data-node="7" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">7</div>
+                                        <div class="pattern-node" data-node="8" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">8</div>
+                                        <div class="pattern-node" data-node="9" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">9</div>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary" id="btn-clear-pattern" style="margin-top:8px; padding:4px 10px; font-size:0.75rem;">Reset Pola</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Condition Photo Check-In Attachments -->
+                    <div style="border-top:1px dashed var(--border-color); margin-top:20px; padding-top:16px; margin-bottom: 20px;">
+                        <h4 style="font-size:0.9rem; margin-bottom:12px; color:var(--text-title);">Foto Dokumentasi Unit Masuk & Customer</h4>
+                        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
+                            <div class="form-group">
+                                <label style="font-size:0.8rem; color:var(--text-secondary);">Foto Kondisi Depan</label>
+                                <input type="file" id="create-photo-front" accept="image/*" class="form-control" style="font-size:0.8rem; padding:6px;">
+                                <div id="preview-photo-front" style="display:none; margin-top:8px; text-align:center;"><img src="" style="max-height:80px; border-radius:6px; border:1px solid var(--border-soft);"></div>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size:0.8rem; color:var(--text-secondary);">Foto Kondisi Belakang</label>
+                                <input type="file" id="create-photo-back" accept="image/*" class="form-control" style="font-size:0.8rem; padding:6px;">
+                                <div id="preview-photo-back" style="display:none; margin-top:8px; text-align:center;"><img src="" style="max-height:80px; border-radius:6px; border:1px solid var(--border-soft);"></div>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size:0.8rem; color:var(--text-secondary);">Foto Kondisi Samping</label>
+                                <input type="file" id="create-photo-side" accept="image/*" class="form-control" style="font-size:0.8rem; padding:6px;">
+                                <div id="preview-photo-side" style="display:none; margin-top:8px; text-align:center;"><img src="" style="max-height:80px; border-radius:6px; border:1px solid var(--border-soft);"></div>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size:0.8rem; color:var(--text-secondary);">Foto Kelengkapan (Dus, Charger, dll)</label>
+                                <input type="file" id="create-photo-accessories" accept="image/*" class="form-control" style="font-size:0.8rem; padding:6px;">
+                                <div id="preview-photo-accessories" style="display:none; margin-top:8px; text-align:center;"><img src="" style="max-height:80px; border-radius:6px; border:1px solid var(--border-soft);"></div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:12px;">
+                            <label style="font-size:0.8rem; color:var(--text-secondary); font-weight:700;">Foto Bersama Customer (Bukti Serah Terima) *</label>
+                            <input type="file" id="create-photo-customer" accept="image/*" class="form-control" style="font-size:0.8rem; padding:6px;" required>
+                            <div id="preview-photo-customer" style="display:none; margin-top:8px; text-align:center;"><img src="" style="max-height:100px; border-radius:6px; border:1px solid var(--border-soft);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Tiket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 1B: Edit Ticket Form -->
+    <div class="modal-overlay" id="modal-edit">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Edit Tiket Servis: <span id="edit-ticket-code-header" style="color:var(--accent-orange);">SRV-X</span></h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="form-edit-ticket" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+                <div class="modal-body" style="overflow-y: auto; flex: 1;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-cust-name">Nama Pelanggan *</label>
+                            <input type="text" id="edit-cust-name" class="form-control" placeholder="Nama lengkap customer" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-cust-phone">No. WhatsApp *</label>
+                            <input type="tel" id="edit-cust-phone" class="form-control" placeholder="Contoh: 08951234567" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-device-model">Model Device *</label>
+                            <input type="text" id="edit-device-model" class="form-control" placeholder="Contoh: iPhone 12 Pro Max" list="iphone-models" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-device-imei">Nomor IMEI</label>
+                            <input type="text" id="edit-device-imei" class="form-control" placeholder="15 digit nomor IMEI (opsional)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-complaint">Keluhan Kerusakan *</label>
+                        <textarea id="edit-complaint" class="form-control" rows="3" placeholder="Jelaskan masalah device secara rinci..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-condition">Kondisi Fisik Saat Masuk</label>
+                        <input type="text" id="edit-condition" class="form-control" placeholder="Contoh: Layar baret wajar, casing casing dent">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-technician">Teknisi Penanggung Jawab</label>
+                            <select id="edit-technician" class="form-control">
+                                <!-- Injected dynamically via database technicians list -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-priority">Prioritas Servis</label>
+                            <select id="edit-priority" class="form-control">
+                                <option value="NORMAL">Normal</option>
+                                <option value="EXPRESS">Express</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-est-date">Estimasi Tanggal Selesai</label>
+                            <input type="date" id="edit-est-date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-est-cost">Estimasi Awal Biaya (Rp)</label>
+                            <input type="text" id="edit-est-cost" class="form-control" placeholder="Rp" inputmode="numeric">
+                        </div>
+                    </div>
+
+                    <!-- Password / Lock Security Credentials -->
+                    <div style="border-top:1px dashed var(--border-color); margin-top:20px; padding-top:16px;">
+                        <h4 style="font-size:0.9rem; margin-bottom:12px; color:var(--text-title);">Pengaman & Kredensial Unit</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="edit-lock-type">Jenis Kunci Layar</label>
+                                <select id="edit-lock-type" class="form-control">
+                                    <option value="NONE">Tanpa Kunci (None)</option>
+                                    <option value="PIN">Kode PIN (Angka)</option>
+                                    <option value="PATTERN">Pola Gambar (Pattern)</option>
+                                    <option value="PASSWORD">Kata Sandi (Password)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="position: relative;">
+                                <label for="edit-lock-code">Sandi / Pola Kunci</label>
+                                <input type="text" id="edit-lock-code" class="form-control" placeholder="Sandi atau urutan nomor pola">
+                                <div id="pattern-draw-container-edit" style="display:none; margin-top: 10px; padding: 10px; background: var(--bg-dark); border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Gambar Pola pada Grid 3x3 di bawah:</div>
+                                    <div style="display: grid; grid-template-columns: repeat(3, 50px); gap: 10px; justify-content: center; margin: 0 auto; width: 170px;" id="pattern-lock-grid-edit">
+                                        <div class="pattern-node-edit" data-node="1" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">1</div>
+                                        <div class="pattern-node-edit" data-node="2" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">2</div>
+                                        <div class="pattern-node-edit" data-node="3" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">3</div>
+                                        <div class="pattern-node-edit" data-node="4" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">4</div>
+                                        <div class="pattern-node-edit" data-node="5" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">5</div>
+                                        <div class="pattern-node-edit" data-node="6" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">6</div>
+                                        <div class="pattern-node-edit" data-node="7" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">7</div>
+                                        <div class="pattern-node-edit" data-node="8" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">8</div>
+                                        <div class="pattern-node-edit" data-node="9" style="width:50px; height:50px; border-radius:50%; border:2px solid var(--primary-purple); display:flex; align-items:center; justify-content:center; cursor:pointer; font-weight:700; color:var(--text-muted); font-size:0.8rem; background:rgba(255,255,255,0.02);">9</div>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary" id="btn-clear-pattern-edit" style="margin-top:8px; padding:4px 10px; font-size:0.75rem;">Reset Pola</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Ticket Detail & Interactivity -->
+    <div class="modal-overlay" id="modal-detail">
+        <div class="modal-container" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>Detail Tiket: <span id="det-ticket-code" style="color:var(--accent-orange);">SRV-X</span></h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-grid">
+                    
+                    <!-- Left Column: Specs, Costs, and Actions -->
+                    <div>
+                        <div class="form-row">
+                            <div class="info-block">
+                                <div class="info-label">Nama Pelanggan</div>
+                                <div class="info-value" id="det-cust-name">-</div>
+                            </div>
+                            <div class="info-block">
+                                <div class="info-label">No WhatsApp</div>
+                                <div class="info-value" id="det-cust-phone">-</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="info-block">
+                                <div class="info-label">Model Device</div>
+                                <div class="info-value" id="det-model">-</div>
+                            </div>
+                            <div class="info-block">
+                                <div class="info-label">Nomor IMEI</div>
+                                <div class="info-value" id="det-imei">-</div>
+                            </div>
+                        </div>
+
+                        <div class="info-block">
+                            <div class="info-label">Keluhan Masalah</div>
+                            <div class="info-value" id="det-complaint" style="font-style: italic;">-</div>
+                        </div>
+
+                        <div class="info-block">
+                            <div class="info-label">Kondisi Fisik Masuk</div>
+                            <div class="info-value" id="det-condition">-</div>
+                        </div>
+
+                        <!-- Security Lock Credentials Display -->
+                        <div class="form-row" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-soft);">
+                            <div class="info-block">
+                                <div class="info-label">Tipe Kunci Layar</div>
+                                <div class="info-value" id="det-lock-type">-</div>
+                            </div>
+                            <div class="info-block">
+                                <div class="info-label">Sandi / Pola Kunci</div>
+                                <div class="info-value" id="det-lock-code">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Documentation Photos Display -->
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border-color);">
+                            <h4 style="font-size: 0.9rem; margin-bottom: 12px; color: var(--text-title);">Foto Dokumentasi Unit & Customer</h4>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;" id="det-photos-grid">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px;">Depan</div>
+                                    <img id="det-photo-front" src="" alt="Foto Depan" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-dark); cursor: pointer;" onclick="window.open(this.src)">
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px;">Belakang</div>
+                                    <img id="det-photo-back" src="" alt="Foto Belakang" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-dark); cursor: pointer;" onclick="window.open(this.src)">
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px;">Samping</div>
+                                    <img id="det-photo-side" src="" alt="Foto Samping" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-dark); cursor: pointer;" onclick="window.open(this.src)">
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px;">Kelengkapan</div>
+                                    <img id="det-photo-accessories" src="" alt="Foto Kelengkapan" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-dark); cursor: pointer;" onclick="window.open(this.src)">
+                                </div>
+                                <div style="text-align: center; grid-column: span 2;">
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; font-weight:700;">Foto Bersama Customer</div>
+                                    <img id="det-photo-customer" src="" alt="Foto Customer" style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-soft); background: var(--bg-dark); cursor: pointer;" onclick="window.open(this.src)">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-row" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                            <div class="info-block">
+                                <div class="info-label">Teknisi</div>
+                                <div class="info-value" id="det-technician">-</div>
+                            </div>
+                            <div class="info-block">
+                                <div class="info-label">Prioritas</div>
+                                <div class="info-value" id="det-priority">-</div>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: 8px;">
+                            <div class="info-block" style="margin-bottom:0;">
+                                <div class="info-label">Estimasi Biaya</div>
+                                <div class="info-value" id="det-est-cost" style="font-weight:700;">-</div>
+                            </div>
+                            <div class="info-block" style="margin-bottom:0;">
+                                <div class="info-label">Biaya Final (Lunas)</div>
+                                <div class="info-value" id="det-final-cost" style="font-weight:700; color: var(--status-selesai);">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Allocation Spareparts Section -->
+                        <div style="margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                            <h4 style="font-size: 0.95rem; margin-bottom: 12px;">Alokasi Sparepart</h4>
+                            <div id="det-allocated-parts" style="margin-bottom:12px;">
+                                <!-- Allocated parts list -->
+                            </div>
+                            
+                            <!-- Allocate Part Action Form -->
+                            <div style="display:flex; gap:8px;">
+                                <select id="det-part-allocate" class="form-control" style="flex:2; padding: 8px 12px; font-size:0.85rem;">
+                                    <!-- Injected options -->
+                                </select>
+                                <input type="number" id="det-part-qty" class="form-control" style="flex:0.5; padding:8px; text-align:center; font-size:0.85rem;" value="1" min="1">
+                                <button class="btn btn-secondary" style="padding:8px 16px; font-size:0.85rem;" id="btn-allocate-part">Tambah</button>
+                            </div>
+                        </div>
+
+                        <!-- General Tracking Link Shortcut -->
+                        <div style="margin-top: 24px; display:flex; gap:8px;">
+                            <button class="btn btn-secondary" style="flex:1; justify-content:center;" id="btn-open-tracking">
+                                Buka Link Customer
+                            </button>
+                            <button class="btn btn-secondary" style="padding: 10px;" id="btn-copy-tracking" title="Salin Link Tracking">
+                                Salin Link
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Status Update & Timeline Progress Logs -->
+                    <div style="border-left: 1px solid var(--border-color); padding-left: 24px;">
+                        
+                        <!-- Status Update Box -->
+                        <div style="background-color: var(--bg-dark); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 24px;">
+                            <h4 style="font-size: 0.9rem; margin-bottom: 12px;">Ubah Progres Status</h4>
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <select id="det-status-update" class="form-control" style="padding: 8px 12px; font-size:0.85rem;">
+                                    <option value="DITERIMA">Diterima</option>
+                                    <option value="DIAGNOSA">Diagnosa</option>
+                                    <option value="MENUNGGU_ACC">Menunggu ACC</option>
+                                    <option value="MENUNGGU_PART">Menunggu Part</option>
+                                    <option value="PROSES">Proses Perbaikan</option>
+                                    <option value="QC_TESTING">QC & Testing</option>
+                                    <option value="SELESAI">Selesai (Siap Diambil)</option>
+                                    <option value="DIAMBIL">Diambil (Lunas)</option>
+                                    <option value="DIBATALKAN">Dibatalkan</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <input type="text" id="det-status-note" class="form-control" style="padding: 8px 12px; font-size:0.85rem;" placeholder="Catatan/alasan update status...">
+                            </div>
+                            <div class="form-group" id="det-rating-container" style="display:none; margin-bottom:12px;">
+                                <label for="det-service-rating" style="font-size:0.78rem; color:var(--text-secondary); display:block; margin-bottom:4px; font-weight:600;">Rating Kepuasan Pelanggan</label>
+                                <select id="det-service-rating" class="form-control" style="padding: 8px 12px; font-size:0.85rem;">
+                                    <option value="5">★★★★★ (5 - Sangat Puas)</option>
+                                    <option value="4">★★★★☆ (4 - Puas)</option>
+                                    <option value="3">★★★☆☆ (3 - Cukup)</option>
+                                    <option value="2">★★☆☆☆ (2 - Kurang)</option>
+                                    <option value="1">★☆☆☆☆ (1 - Buruk)</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" style="width:100%; padding:8px; font-size:0.85rem; justify-content:center;" id="btn-save-status">
+                                Perbarui Status & Kirim WA
+                            </button>
+                        </div>
+
+                        <!-- Progress Timeline Logs -->
+                        <h4 style="font-size: 0.9rem; margin-bottom: 8px;">Log Progres Teknisi</h4>
+                        <ul class="timeline" id="det-timeline">
+                            <!-- Populated timeline logs -->
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:space-between;">
+                <div>
+                    <button class="btn btn-secondary" id="btn-print-receipt">Cetak Nota Struk</button>
+                    <button class="btn btn-secondary" id="btn-edit-ticket" style="background:var(--primary-purple); color:#fff; border-color:transparent; margin-left:8px;">Edit Tiket</button>
+                </div>
+                <button class="btn btn-primary modal-close">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Create Technician Form -->
+    <div class="modal-overlay" id="modal-create-tech">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Tambah Teknisi Baru</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="form-create-tech">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="tech-name">Nama Lengkap/Panggilan *</label>
+                        <input type="text" id="tech-name" class="form-control" placeholder="Contoh: Rian" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tech-phone">Nomor WhatsApp *</label>
+                        <input type="tel" id="tech-phone" class="form-control" placeholder="Contoh: 08951234567" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tech-specialty">Spesialisasi / Keahlian *</label>
+                        <input type="text" id="tech-specialty" class="form-control" placeholder="Contoh: iPhone Hardware Specialist" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tech-photo">Foto Profil (Unggah File Gambar)</label>
+                        <input type="file" id="tech-photo" class="form-control" accept="image/*" style="padding: 10px;">
+                    </div>
+                    <div class="form-group">
+                        <label for="tech-password">Kata Sandi Login *</label>
+                        <input type="password" id="tech-password" class="form-control" placeholder="Kata sandi untuk login teknisi" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close">Batal</button>
+                    <button type="submit" class="btn btn-primary">Daftarkan Teknisi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3B: Technician Details & Track Record Logs -->
+    <div class="modal-overlay" id="modal-tech-detail">
+        <div class="modal-container" style="max-width: 760px;">
+            <div class="modal-header">
+                <h3>Profil & Track Record Teknisi</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" style="overflow-y: auto;">
+                <!-- Profile Header Details -->
+                <div style="display: flex; gap: 20px; align-items: center; border-bottom: 1px solid var(--border-soft); padding-bottom: 20px; margin-bottom: 20px;">
+                    <img id="td-photo" src="" alt="Foto Profil" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-purple); padding: 2px; background: #FFF;">
+                    <div>
+                        <h4 id="td-name" style="font-size: 1.4rem; font-weight: 700; color: var(--text-title);">-</h4>
+                        <div id="td-specialty" style="font-size: 0.9rem; color: var(--primary-purple); font-weight: 600; margin-top: 2px;">-</div>
+                        <div id="td-phone" style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">-</div>
+                        <div id="td-password-container" style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; font-weight: 600;">Kata Sandi: <span id="td-password" style="color: var(--accent-orange); font-family: monospace;">-</span></div>
+                    </div>
+                </div>
+
+                <!-- Stats Summary Row -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div style="background: var(--bg-dark); border: 1px solid var(--border-soft); padding: 12px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Kerja Aktif</div>
+                        <div id="td-active-jobs" style="font-size: 1.6rem; font-weight: 700; color: var(--text-title); margin-top: 4px;">0</div>
+                    </div>
+                    <div style="background: var(--bg-dark); border: 1px solid var(--border-soft); padding: 12px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Selesai/Lunas</div>
+                        <div id="td-completed-jobs" style="font-size: 1.6rem; font-weight: 700; color: var(--status-diambil); margin-top: 4px;">0</div>
+                    </div>
+                    <div style="background: var(--bg-dark); border: 1px solid var(--border-soft); padding: 12px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Rating Teknisi</div>
+                        <div id="td-rating" style="font-size: 1.6rem; font-weight: 700; color: var(--accent-orange); margin-top: 4px;">★ 5.0</div>
+                    </div>
+                </div>
+
+                <!-- Track Record Logs -->
+                <div>
+                    <h4 style="font-size: 1rem; margin-bottom: 12px; border-bottom: 1px solid var(--border-soft); padding-bottom: 8px;">Log Aktivitas & Riwayat Servis</h4>
+                    <div class="table-container" style="margin-bottom: 0; overflow-x: auto;">
+                        <table class="custom-table" style="font-size: 0.85rem;">
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>No Tiket</th>
+                                    <th>Perangkat</th>
+                                    <th>Aktivitas Log</th>
+                                    <th>Status Akhir</th>
+                                </tr>
+                            </thead>
+                            <tbody id="td-activity-tbody">
+                                <!-- Dynamic logs injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn-print-tech-log">Cetak Log</button>
+                <button type="button" class="btn btn-secondary modal-close">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Create Mutation Form -->
+    <div class="modal-overlay" id="modal-create-mutation">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Catat Arus Kas Masuk/Keluar</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="form-create-mutation">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mut-type">Tipe Transaksi *</label>
+                            <select id="mut-type" class="form-control">
+                                <option value="MASUK">Uang Masuk (Pemasukan)</option>
+                                <option value="KELUAR">Uang Keluar (Pengeluaran)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mut-pay-method">Metode Pembayaran *</label>
+                            <select id="mut-pay-method" class="form-control">
+                                <option value="QRIS">QRIS</option>
+                                <option value="TRANSFER">Transfer Bank</option>
+                                <option value="TUNAI">Tunai / Cash</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mut-category">Kategori Kas *</label>
+                            <input type="text" id="mut-category" class="form-control" placeholder="Contoh: Jasa Servis, Beli Part, Listrik" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mut-amount">Nominal Rp *</label>
+                            <input type="text" id="mut-amount" class="form-control" placeholder="Rp" inputmode="numeric" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="mut-note">Keterangan Transaksi *</label>
+                        <input type="text" id="mut-note" class="form-control" placeholder="Contoh: Pembelian sparepart baterai ke supplier" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Container for dynamic Toast WhatsApp messages -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Hidden Printer Area for Struk Thermal -->
+    <div id="thermal-receipt"></div>
+    <div id="tech-receipt-print"></div>
+    <div id="table-print-area"></div>
+
+    <!-- Scripts -->
+    <script src="js/database.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

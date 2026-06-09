@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pelacakan Servis HP — Planet Store Boyolali</title>
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/jpeg" href="../../BRANDING_KIT/LOGO.jpg">
+    <style>
+        /* Specific adjustments to make tracking page feel centered and custom */
+        .tracking-page-wrapper {
+            padding: 40px 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+    </style>
+</head>
+<body style="background-color: var(--bg-dark);">
+
+    <div class="tracking-page-wrapper">
+        
+        <!-- Hero Title Brand -->
+        <header class="customer-hero">
+            <img src="../../BRANDING_KIT/LOGO.jpg" alt="Logo Planet Store" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-orange); margin-bottom: 12px;">
+            <h1>Planet Store Boyolali</h1>
+            <p>Pusatnya HP Murah &amp; Bergaransi — iPhone &amp; Android</p>
+        </header>
+
+        <!-- Ticket Lookup Card -->
+        <section class="customer-search-card">
+            <h3 style="font-size: 1.1rem; text-align: center; color: var(--text-title);">Lacak Progres Perbaikan HP</h3>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="track-search-input">Nomor Tiket Servis / WhatsApp</label>
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                    <input type="text" id="track-search-input" class="form-control" style="text-transform: uppercase;" placeholder="Contoh: SRV-20260527-0001">
+                    <button class="btn btn-cta" id="btn-track-search">Cari</button>
+                </div>
+            </div>
+            <p style="font-size: 0.75rem; text-align: center; color: var(--text-muted); margin-bottom: 0;">
+                Masukkan nomor tiket yang tertera di nota masuk atau nomor WhatsApp saat pendaftaran.
+            </p>
+        </section>
+
+        <!-- Result Container Card (Initially Hidden) -->
+        <section class="customer-result-container" id="track-result-card" style="display: none; width: 100%;">
+            <div class="kpi-card" style="margin-bottom: 24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div>
+                        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Nomor Tiket</span>
+                        <h2 id="res-ticket-code" style="color:var(--accent-orange); font-size:1.5rem; margin-top:2px;">SRV-X</h2>
+                    </div>
+                    <div>
+                        <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; display:block; text-align:right;">Status Saat Ini</span>
+                        <span class="badge" id="res-status-text" style="margin-top:4px; font-size:0.85rem; padding:6px 12px;">PROSES</span>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:20px; padding-top:16px; border-top:1px solid var(--border-soft);">
+                    <div>
+                        <div class="info-label">Perangkat</div>
+                        <div class="info-value" id="res-device-model" style="font-weight:700; color: var(--text-title)">-</div>
+                    </div>
+                    <div>
+                        <div class="info-label">Estimasi Selesai</div>
+                        <div class="info-value" id="res-est-selesai" style="color: var(--text-title)">-</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:16px;">
+                    <div class="info-label">Keluhan Kerusakan</div>
+                    <div class="info-value" id="res-complaint" style="font-style:italic; color: var(--text-title)">-</div>
+                </div>
+
+                <div style="margin-top:20px; padding:16px; background:var(--bg-dark); border:1px solid var(--border-soft); border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                    <div>
+                        <div class="info-label" id="res-biaya-label">Biaya Servis:</div>
+                        <div id="res-biaya-val">
+                            <!-- Injected price & ACC actions -->
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="btn-contact-wa" style="font-size:0.85rem; padding:8px 16px;">
+                        Tanya Admin WA
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progres Timeline -->
+            <div class="table-container" style="padding: 24px;">
+                <h3 style="font-size:1.1rem; margin-bottom:16px;">Timeline Progres Servis</h3>
+                <ul class="timeline" id="res-timeline" style="margin-top: 24px;">
+                    <!-- Timeline items generated here -->
+                </ul>
+            </div>
+        </section>
+
+        <!-- Not Found Alert Card -->
+        <section class="customer-search-card" id="track-not-found" style="display: none; border-color: var(--status-dibatalkan); margin-top:24px; text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: bold; color: var(--status-dibatalkan);">[!]</div>
+            <h3 style="font-size:1.1rem; color:var(--text-title); margin-top:8px;">Tiket Tidak Ditemukan</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">
+                Nomor tiket atau nomor WhatsApp yang Anda masukkan tidak terdaftar di sistem servis kami. Silakan periksa kembali pengetikan Anda atau hubungi admin kami untuk klarifikasi.
+            </p>
+        </section>
+
+        <footer style="margin-top: 60px; text-align:center; font-size:0.8rem; color:var(--text-muted);">
+            <p>&copy; 2026 Planet Store Boyolali. All Rights Reserved.</p>
+            <p>Jalan Tentara Pelajar No.04, Kiringan, Boyolali (Timur Satlantas Sunggingan)</p>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/database.js"></script>
+    <script src="js/tracking.js"></script>
+</body>
+</html>
