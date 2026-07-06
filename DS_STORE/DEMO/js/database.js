@@ -134,8 +134,38 @@ const INITIAL_PHONE_TYPES = [
     { id: 'pt4', brand: 'Apple', model: 'iPhone 15 Pro', capacity: '128GB/256GB/512GB/1TB' }
 ];
 
+const INITIAL_RETUR_BELI = [
+    {
+        id: 'rbl1',
+        code: 'RBL-20260703-0001',
+        buy_code: 'BLI-20260703-0012',
+        stock_id: 'stk3',
+        model: 'iPhone 11 128GB',
+        imei: '356712398455113',
+        supplier_name: 'CV INDO MULTIMEDIA',
+        amount: 3800000,
+        reason: 'LCD Cacat Produksi',
+        date: new Date(Date.now() - 3*24*60*60*1000).toISOString()
+    }
+];
+
+const INITIAL_RETUR_JUAL = [
+    {
+        id: 'rjl1',
+        code: 'RJL-20260704-0001',
+        sell_code: 'JUL-20260704-0021',
+        stock_id: 'stk4',
+        model: 'iPhone 15 Pro Max',
+        imei: '356712398455120',
+        customer_name: 'Budi Santoso',
+        amount: 14500000,
+        reason: 'Salah beli kapasitas (minta 256GB)',
+        date: new Date(Date.now() - 2*24*60*60*1000).toISOString()
+    }
+];
+
 function initStoreDatabase() {
-    const DB_VERSION = '2.0_store_overhaul';
+    const DB_VERSION = '2.1_store_retur_updates';
     const storedVersion = localStorage.getItem('planet_store_jual_db_version');
 
     if (storedVersion !== DB_VERSION) {
@@ -149,8 +179,8 @@ function initStoreDatabase() {
         localStorage.setItem(DB_KEYS.BANK_ACCOUNTS, JSON.stringify(INITIAL_BANK_ACCOUNTS));
         localStorage.setItem(DB_KEYS.LOG_BARANG, JSON.stringify(INITIAL_LOG_BARANG));
         localStorage.setItem(DB_KEYS.PHONE_TYPES, JSON.stringify(INITIAL_PHONE_TYPES));
-        localStorage.setItem(DB_KEYS.RETUR_BELI, JSON.stringify([]));
-        localStorage.setItem(DB_KEYS.RETUR_JUAL, JSON.stringify([]));
+        localStorage.setItem(DB_KEYS.RETUR_BELI, JSON.stringify(INITIAL_RETUR_BELI));
+        localStorage.setItem(DB_KEYS.RETUR_JUAL, JSON.stringify(INITIAL_RETUR_JUAL));
         localStorage.setItem(DB_KEYS.BANK_MUTATIONS, JSON.stringify([]));
         localStorage.setItem('planet_store_jual_db_version', DB_VERSION);
     }

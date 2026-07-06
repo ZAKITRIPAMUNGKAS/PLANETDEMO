@@ -82,7 +82,8 @@
                         <a href="javascript:void(0)" onclick="alert('Tambah Pengguna Demo')">Tambah Pengguna</a>
                         <a href="javascript:void(0)" onclick="alert('Data Pengguna Demo')">Data Pengguna</a>
                         <a href="javascript:void(0)" onclick="alert('Ganti Password Demo')">Ganti Password</a>
-                        <a href="javascript:void(0)" onclick="showTabDirect('overview')">Setting Kertas Printer</a>
+                        <a href="javascript:void(0)" onclick="openPhoneTypesModal()">Pengaturan Tipe Ponsel</a>
+                        <a href="javascript:void(0)" onclick="openSetPrintingModal()">Setting Kertas Printer</a>
                         <a href="javascript:void(0)" onclick="logoutUser()">Keluar</a>
                     </div>
                 </div>
@@ -93,6 +94,8 @@
                         <a href="javascript:void(0)" onclick="showTabDirect('laporan')">Laporan Pembelian</a>
                         <a href="javascript:void(0)" onclick="showTabDirect('pembayaran')">Pembayaran Utang</a>
                         <a href="javascript:void(0)" onclick="alert('Supplier Data Rekanan')">Data Supplier</a>
+                        <a href="javascript:void(0)" onclick="openReturBuyModal()">Retur Pembelian</a>
+                        <a href="javascript:void(0)" onclick="showTabDirect('laporan'); switchReportTab('retur-beli')">Laporan Retur Pembelian</a>
                     </div>
                 </div>
                 <div class="erp-dropdown">
@@ -102,6 +105,8 @@
                         <a href="javascript:void(0)" onclick="showTabDirect('laporan')">Laporan Penjualan</a>
                         <a href="javascript:void(0)" onclick="showTabDirect('pembayaran')">Pembayaran Piutang</a>
                         <a href="javascript:void(0)" onclick="showTabDirect('customers')">Data Customer</a>
+                        <a href="javascript:void(0)" onclick="openReturSellModal()">Retur Penjualan</a>
+                        <a href="javascript:void(0)" onclick="showTabDirect('laporan'); switchReportTab('retur-jual')">Laporan Retur Penjualan</a>
                     </div>
                 </div>
                 <div class="erp-dropdown">
@@ -425,6 +430,8 @@
                         <button class="sub-tab-btn active" onclick="switchReportTab('beli')">Lap. Pembelian</button>
                         <button class="sub-tab-btn" onclick="switchReportTab('jual')">Lap. Penjualan</button>
                         <button class="sub-tab-btn" onclick="switchReportTab('stok')">Lap. Stok Barang</button>
+                        <button class="sub-tab-btn" onclick="switchReportTab('pembayaran')">Lap. Pembayaran</button>
+                        <button class="sub-tab-btn" onclick="switchReportTab('retur')">Lap. Retur Barang</button>
                     </div>
                     
                     <div id="report-beli" class="report-section">
@@ -460,20 +467,121 @@
                     </div>
 
                     <div id="report-stok" class="report-section" style="display:none;">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>Kode</th>
-                                    <th>Kategori</th>
-                                    <th>Nama / Model</th>
-                                    <th>IMEI</th>
-                                    <th>Harga Jual</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="report-stok-table-body"></tbody>
-                        </table>
+                        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                            <button class="filter-pill active" id="stok-rep-global-btn" onclick="toggleStokReportView('global')">Stok HP Global</button>
+                            <button class="filter-pill" id="stok-rep-detail-btn" onclick="toggleStokReportView('detail')">Detail Stock HP</button>
+                        </div>
+                        <div id="stok-report-global-view">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama / Model Handphone</th>
+                                        <th>Jumlah Tersedia</th>
+                                        <th>Estimasi Nilai Stok (Modal)</th>
+                                        <th>Estimasi Nilai Jual</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-stok-global-body"></tbody>
+                            </table>
+                        </div>
+                        <div id="stok-report-detail-view" style="display:none;">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kode</th>
+                                        <th>Kategori</th>
+                                        <th>Nama / Model</th>
+                                        <th>IMEI</th>
+                                        <th>Harga Beli</th>
+                                        <th>Harga Jual</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-stok-detail-body"></tbody>
+                            </table>
+                        </div>
                     </div>
+
+                    <div id="report-pembayaran" class="report-section" style="display:none;">
+                        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                            <button class="filter-pill active" id="pay-rep-utang-btn" onclick="togglePayReportView('utang')">Laporan Utang</button>
+                            <button class="filter-pill" id="pay-rep-piutang-btn" onclick="togglePayReportView('piutang')">Laporan Piutang</button>
+                        </div>
+                        <div id="pay-report-utang-view">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kode Beli</th>
+                                        <th>Supplier</th>
+                                        <th>Total Utang</th>
+                                        <th>Terbayar</th>
+                                        <th>Sisa</th>
+                                        <th>Jatuh Tempo</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-pay-utang-body"></tbody>
+                            </table>
+                        </div>
+                        <div id="pay-report-piutang-view" style="display:none;">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kode Jual</th>
+                                        <th>Customer</th>
+                                        <th>Total Piutang</th>
+                                        <th>Terbayar</th>
+                                        <th>Sisa</th>
+                                        <th>Jatuh Tempo</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-pay-piutang-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="report-retur" class="report-section" style="display:none;">
+                        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                            <button class="filter-pill active" id="retur-rep-beli-btn" onclick="toggleReturReportView('beli')">Retur Pembelian</button>
+                            <button class="filter-pill" id="retur-rep-jual-btn" onclick="toggleReturReportView('jual')">Retur Penjualan</button>
+                        </div>
+                        <div id="retur-report-beli-view">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kode Retur</th>
+                                        <th>Kode Beli</th>
+                                        <th>Barang</th>
+                                        <th>IMEI / SN</th>
+                                        <th>Supplier</th>
+                                        <th>Nominal Beli</th>
+                                        <th>Tanggal Retur</th>
+                                        <th>Alasan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-retur-beli-body"></tbody>
+                            </table>
+                        </div>
+                        <div id="retur-report-jual-view" style="display:none;">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kode Retur</th>
+                                        <th>Kode Jual</th>
+                                        <th>Barang</th>
+                                        <th>IMEI / SN</th>
+                                        <th>Pelanggan</th>
+                                        <th>Nominal Jual</th>
+                                        <th>Tanggal Retur</th>
+                                        <th>Alasan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-retur-jual-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -723,19 +831,133 @@
         </div>
     </div>
 
-    <!-- MODAL: STOCK DETAIL -->
-    <div class="modal-overlay" id="modal-stock-detail">
+    <!-- MODAL: RETUR PEMBELIAN -->
+    <div class="modal-overlay" id="modal-retur-buy">
         <div class="modal-container">
             <div class="modal-header">
-                <h2>Detail Unit Inventaris</h2>
-                <button class="modal-close" onclick="closeModal('modal-stock-detail')">&times;</button>
+                <h2>Retur Pembelian (Ke Supplier)</h2>
+                <button class="modal-close" onclick="closeModal('modal-retur-buy')">&times;</button>
             </div>
-            <div class="modal-body" id="stock-detail-body">
-                <!-- Content injected by JS -->
+            <form id="form-retur-buy" onsubmit="handleReturBuySubmit(event)">
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label>Pilih Transaksi Pembelian</label>
+                            <select class="form-control" id="retur-buy-tx-id" required onchange="populateReturBuyItems()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Pilih Unit Barang yang Diretur</label>
+                            <select class="form-control" id="retur-buy-stock-id" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Alasan Retur / Kerusakan</label>
+                            <input type="text" class="form-control" id="retur-buy-reason" required placeholder="Contoh: Kamera Rusak, LCD Bergaris">
+                        </div>
+                        <div class="form-group">
+                            <label>Nominal Refund / Potongan Dana (Rp)</label>
+                            <input type="number" class="form-control" id="retur-buy-refund" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-retur-buy')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Retur</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: RETUR PENJUALAN -->
+    <div class="modal-overlay" id="modal-retur-sell">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Retur Penjualan (Dari Customer)</h2>
+                <button class="modal-close" onclick="closeModal('modal-retur-sell')">&times;</button>
+            </div>
+            <form id="form-retur-sell" onsubmit="handleReturSellSubmit(event)">
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label>Pilih Transaksi Penjualan</label>
+                            <select class="form-control" id="retur-sell-tx-id" required onchange="populateReturSellItems()"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Pilih Unit Barang yang Diretur</label>
+                            <select class="form-control" id="retur-sell-stock-id" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Alasan Retur dari Customer</label>
+                            <input type="text" class="form-control" id="retur-sell-reason" required placeholder="Contoh: Barang cacat, tidak jadi beli">
+                        </div>
+                        <div class="form-group">
+                            <label>Nominal Pengembalian Dana ke Customer (Rp)</label>
+                            <input type="number" class="form-control" id="retur-sell-refund" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-retur-sell')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Retur</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PENGATURAN TIPE PONSEL -->
+    <div class="modal-overlay" id="modal-phone-types">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Pengaturan Tipe Ponsel (Database Master)</h2>
+                <button class="modal-close" onclick="closeModal('modal-phone-types')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-phone-type" onsubmit="handlePhoneTypeSubmit(event)" style="display: flex; gap: 12px; margin-bottom: 16px;">
+                    <input type="text" class="form-control" id="new-phone-model" placeholder="Model Ponsel Baru (Contoh: iPhone 15 Pro Max)" required style="flex:1;">
+                    <button type="submit" class="btn btn-primary">Tambah Tipe</button>
+                </form>
+                <div style="max-height: 250px; overflow-y: auto; border: 1px solid var(--border-soft); border-radius: 8px;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Nama Model / Tipe Ponsel</th>
+                                <th style="width: 80px; text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="phone-types-table-body">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal('modal-stock-detail')">Tutup</button>
+                <button class="btn btn-secondary" onclick="closeModal('modal-phone-types')">Tutup</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SETTING KERTAS PRINTER -->
+    <div class="modal-overlay" id="modal-set-printing">
+        <div class="modal-container" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2>Setting Kertas Printer</h2>
+                <button class="modal-close" onclick="closeModal('modal-set-printing')">&times;</button>
+            </div>
+            <form id="form-set-printing" onsubmit="handleSetPrintingSubmit(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Pilih Ukuran Kertas Default</label>
+                        <select class="form-control" id="printing-paper-size">
+                            <option value="58mm">Thermal 58mm (Receipt Mini)</option>
+                            <option value="80mm">Thermal 80mm (Receipt Standard)</option>
+                            <option value="A4">A4 / Letter (Invoice Sheet)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-set-printing')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+                </div>
+            </form>
         </div>
     </div>
 

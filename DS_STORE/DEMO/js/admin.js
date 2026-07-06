@@ -544,6 +544,38 @@ function switchReportTab(reportName) {
     renderReportView();
 }
 
+// Switch nested report sub-views
+let currentStokReportView = 'global';
+let currentPayReportView = 'utang';
+let currentReturReportView = 'beli';
+
+function toggleStokReportView(type) {
+    currentStokReportView = type;
+    document.getElementById('stok-rep-global-btn').classList.toggle('active', type === 'global');
+    document.getElementById('stok-rep-detail-btn').classList.toggle('active', type === 'detail');
+    document.getElementById('stok-report-global-view').style.display = type === 'global' ? 'block' : 'none';
+    document.getElementById('stok-report-detail-view').style.display = type === 'detail' ? 'block' : 'none';
+    renderReportView();
+}
+
+function togglePayReportView(type) {
+    currentPayReportView = type;
+    document.getElementById('pay-rep-utang-btn').classList.toggle('active', type === 'utang');
+    document.getElementById('pay-rep-piutang-btn').classList.toggle('active', type === 'piutang');
+    document.getElementById('pay-report-utang-view').style.display = type === 'utang' ? 'block' : 'none';
+    document.getElementById('pay-report-piutang-view').style.display = type === 'piutang' ? 'block' : 'none';
+    renderReportView();
+}
+
+function toggleReturReportView(type) {
+    currentReturReportView = type;
+    document.getElementById('retur-rep-beli-btn').classList.toggle('active', type === 'beli');
+    document.getElementById('retur-rep-jual-btn').classList.toggle('active', type === 'jual');
+    document.getElementById('retur-report-beli-view').style.display = type === 'beli' ? 'block' : 'none';
+    document.getElementById('retur-report-jual-view').style.display = type === 'jual' ? 'block' : 'none';
+    renderReportView();
+}
+
 function renderReportView() {
     if (currentReportSection === 'beli') {
         const body = document.getElementById('report-beli-table-body');
@@ -574,19 +606,112 @@ function renderReportView() {
             </tr>
         `).join('');
     } else if (currentReportSection === 'stok') {
-        const body = document.getElementById('report-stok-table-body');
-        if (!body) return;
-        const stock = getStock();
-        body.innerHTML = stock.map(s => `
-            <tr>
-                <td><strong>${s.code}</strong></td>
-                <td><span class="badge badge-info">${s.type}</span></td>
-                <td>${s.model}</td>
-                <td>${s.imei}</td>
-                <td><strong>${formatRupiah(s.selling_price)}</strong></td>
-                <td><span class="badge ${s.status === 'TERSEDIA' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td>
-            </tr>
-        `).join('');
+        if (currentStokReportView === 'global') {
+            const body = document.getElementById('report-stok-global-body');
+            if (!body) return;
+            const stock = getStock().filter(item => item.status === 'TERSEDIA');
+            
+            // Group by model
+            const groups = {};
+            stock.forEach(item => {
+                if (!groups[item.model]) {
+                    groups[item.model] = { count: 0, cost: 0, val: 0 };
+                }
+                groups[item.model].count++;
+                groups[item.model].cost += item.purchase_price;
+                groups[item.model].val += item.selling_price;
+            });
+
+            body.innerHTML = Object.keys(groups).map(model => `
+                <tr>
+                    <td><strong>${model}</strong></td>
+                    <td>${groups[model].count} Unit</td>
+                    <td><strong>${formatRupiah(groups[model].cost)}</strong></td>
+                    <td><strong>${formatRupiah(groups[model].val)}</strong></td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" style="text-align:center;">Tidak ada stok tersedia.</td></tr>';
+        } else {
+            const body = document.getElementById('report-stok-detail-body');
+            if (!body) return;
+            const stock = getStock();
+            body.innerHTML = stock.map(s => `
+                <tr>
+                    <td><strong>${s.code}</strong></td>
+                    <td><span class="badge badge-info">${s.type}</span></td>
+                    <td>${s.model}</td>
+                    <td>${s.imei}</td>
+                    <td><strong>${formatRupiah(s.purchase_price)}</strong></td>
+                    <td><strong>${formatRupiah(s.selling_price)}</strong></td>
+                    <td><span class="badge ${s.status === 'TERSEDIA' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td>
+                </tr>
+            `).join('') || '<tr><td colspan="7" style="text-align:center;">Tidak ada data stok.</td></tr>';
+        }
+    } else if (currentReportSection === 'pembayaran') {
+        if (currentPayReportView === 'utang') {
+            const body = document.getElementById('report-pay-utang-body');
+            if (!body) return;
+            const debts = getDebts();
+            body.innerHTML = debts.map(d => `
+                <tr>
+                    <td><strong>${d.code}</strong></td>
+                    <td>${d.supplier_name}</td>
+                    <td><strong>${formatRupiah(d.total_amount)}</strong></td>
+                    <td><strong>${formatRupiah(d.paid_amount)}</strong></td>
+                    <td><strong>${formatRupiah(d.total_amount - d.paid_amount)}</strong></td>
+                    <td>${d.due_date}</td>
+                    <td><span class="badge ${d.status === 'LUNAS' ? 'badge-success' : 'badge-danger'}">${d.status}</span></td>
+                </tr>
+            `).join('') || '<tr><td colspan="7" style="text-align:center;">Tidak ada data utang.</td></tr>';
+        } else {
+            const body = document.getElementById('report-pay-piutang-body');
+            if (!body) return;
+            const receivables = getReceivables();
+            body.innerHTML = receivables.map(r => `
+                <tr>
+                    <td><strong>${r.code}</strong></td>
+                    <td>${r.customer_name}</td>
+                    <td><strong>${formatRupiah(r.total_amount)}</strong></td>
+                    <td><strong>${formatRupiah(r.paid_amount)}</strong></td>
+                    <td><strong>${formatRupiah(r.total_amount - r.paid_amount)}</strong></td>
+                    <td>${r.due_date}</td>
+                    <td><span class="badge ${r.status === 'LUNAS' ? 'badge-success' : 'badge-danger'}">${r.status}</span></td>
+                </tr>
+            `).join('') || '<tr><td colspan="7" style="text-align:center;">Tidak ada data piutang.</td></tr>';
+        }
+    } else if (currentReportSection === 'retur') {
+        if (currentReturReportView === 'beli') {
+            const body = document.getElementById('report-retur-beli-body');
+            if (!body) return;
+            const returBeli = getReturBeli();
+            body.innerHTML = returBeli.map(r => `
+                <tr>
+                    <td><strong>${r.code}</strong></td>
+                    <td>${r.buy_code}</td>
+                    <td>${r.model}</td>
+                    <td>${r.imei}</td>
+                    <td>${r.supplier_name}</td>
+                    <td><strong>${formatRupiah(r.amount)}</strong></td>
+                    <td>${formatDateTime(r.date)}</td>
+                    <td>${r.reason}</td>
+                </tr>
+            `).join('') || '<tr><td colspan="8" style="text-align:center;">Belum ada retur pembelian.</td></tr>';
+        } else {
+            const body = document.getElementById('report-retur-jual-body');
+            if (!body) return;
+            const returJual = getReturJual();
+            body.innerHTML = returJual.map(r => `
+                <tr>
+                    <td><strong>${r.code}</strong></td>
+                    <td>${r.sell_code}</td>
+                    <td>${r.model}</td>
+                    <td>${r.imei}</td>
+                    <td>${r.customer_name}</td>
+                    <td><strong>${formatRupiah(r.amount)}</strong></td>
+                    <td>${formatDateTime(r.date)}</td>
+                    <td>${r.reason}</td>
+                </tr>
+            `).join('') || '<tr><td colspan="8" style="text-align:center;">Belum ada retur penjualan.</td></tr>';
+        }
     }
 }
 
@@ -1169,9 +1294,354 @@ function initSidebarEvents() {
     }
 }
 
+// ==================== NEW ERP CONTROLLERS ====================
+
+// --- RETUR PEMBELIAN (Supplier) ---
+function openReturBuyModal() {
+    const selTx = document.getElementById('retur-buy-tx-id');
+    if (!selTx) return;
+    const buyTxs = getBuyTransactions();
+    selTx.innerHTML = '<option value="">-- Pilih Transaksi Beli --</option>' + 
+        buyTxs.map(tx => `<option value="${tx.id}">${tx.code} - ${tx.supplier_name}</option>`).join('');
+    document.getElementById('retur-buy-stock-id').innerHTML = '<option value="">-- Pilih Unit --</option>';
+    document.getElementById('retur-buy-reason').value = '';
+    document.getElementById('retur-buy-refund').value = '';
+    openModal('modal-retur-buy');
+}
+
+function populateReturBuyItems() {
+    const txId = document.getElementById('retur-buy-tx-id').value;
+    const selStock = document.getElementById('retur-buy-stock-id');
+    if (!selStock) return;
+    if (!txId) {
+        selStock.innerHTML = '<option value="">-- Pilih Unit --</option>';
+        return;
+    }
+    const buyTxs = getBuyTransactions();
+    const tx = buyTxs.find(t => t.id === txId);
+    if (!tx) return;
+
+    const stock = getStock();
+    const availableImeis = stock.filter(s => s.status === 'TERSEDIA').map(s => s.imei);
+    const returnableUnits = tx.units.filter(u => availableImeis.includes(u.imei));
+
+    if (returnableUnits.length === 0) {
+        selStock.innerHTML = '<option value="">-- Tidak ada unit tersedia untuk diretur --</option>';
+        return;
+    }
+
+    selStock.innerHTML = returnableUnits.map(u => {
+        const matchedItem = stock.find(s => s.imei === u.imei);
+        return `<option value="${matchedItem.id}">${matchedItem.code} - ${u.model} [${u.imei}]</option>`;
+    }).join('');
+}
+
+function handleReturBuySubmit(event) {
+    event.preventDefault();
+    const txId = document.getElementById('retur-buy-tx-id').value;
+    const stockId = document.getElementById('retur-buy-stock-id').value;
+    const reason = document.getElementById('retur-buy-reason').value;
+    const refund = parseFloat(document.getElementById('retur-buy-refund').value) || 0;
+
+    const buyTxs = getBuyTransactions();
+    const tx = buyTxs.find(t => t.id === txId);
+    const stock = getStock();
+    const item = stock.find(s => s.id === stockId);
+    if (!tx || !item) return;
+
+    item.status = 'RETUR_BELI';
+    item.notes = `Diretur: ${reason}`;
+    saveStock(stock);
+
+    const returBeli = getReturBeli();
+    const returCode = generateTransactionCode('RBL');
+    returBeli.push({
+        id: 'rbl' + (returBeli.length + 1),
+        code: returCode,
+        buy_code: tx.code,
+        stock_id: item.id,
+        model: item.model,
+        imei: item.imei,
+        supplier_name: tx.supplier_name,
+        amount: refund,
+        reason: reason,
+        date: new Date().toISOString()
+    });
+    saveReturBeli(returBeli);
+
+    const logs = getLogBarang();
+    logs.push({
+        id: 'log' + (logs.length + 1),
+        stock_code: item.code,
+        model: item.model,
+        action: 'RETUR_BELI',
+        date: new Date().toISOString(),
+        user: 'admin',
+        description: `Retur pembelian ke supplier. Alasan: ${reason}`
+    });
+    saveLogBarang(logs);
+
+    const mutations = getMutations();
+    mutations.push({
+        id: 'm-r' + (mutations.length + 1),
+        date: new Date().toISOString(),
+        module: 'STORE',
+        ref_id: returCode,
+        type: 'MASUK',
+        category: 'Retur Pembelian',
+        amount: refund,
+        pay_method: tx.pay_method === 'UTANG' ? 'CASH' : tx.pay_method,
+        note: `Refund retur ${item.model} dari ${tx.supplier_name}`,
+        logged_by: 'admin'
+    });
+    saveMutations(mutations);
+
+    const bankAccounts = getBankAccounts();
+    const account = bankAccounts.find(b => b.id === (tx.pay_method === 'TRANSFER' ? 'bca' : 'cash'));
+    if (account) {
+        account.balance += refund;
+        saveBankAccounts(bankAccounts);
+    }
+
+    closeModal('modal-retur-buy');
+    alert(`Retur Pembelian ${returCode} berhasil disimpan.`);
+    renderDashboard();
+    renderStockTable();
+}
+
+// --- RETUR PENJUALAN (Customer) ---
+function openReturSellModal() {
+    const selTx = document.getElementById('retur-sell-tx-id');
+    if (!selTx) return;
+    const sellTxs = getSellTransactions();
+    selTx.innerHTML = '<option value="">-- Pilih Transaksi Jual --</option>' + 
+        sellTxs.map(tx => `<option value="${tx.id}">${tx.code} - ${tx.customer_name}</option>`).join('');
+    document.getElementById('retur-sell-stock-id').innerHTML = '<option value="">-- Pilih Unit --</option>';
+    document.getElementById('retur-sell-reason').value = '';
+    document.getElementById('retur-sell-refund').value = '';
+    openModal('modal-retur-sell');
+}
+
+function populateReturSellItems() {
+    const txId = document.getElementById('retur-sell-tx-id').value;
+    const selStock = document.getElementById('retur-sell-stock-id');
+    if (!selStock) return;
+    if (!txId) {
+        selStock.innerHTML = '<option value="">-- Pilih Unit --</option>';
+        return;
+    }
+    const sellTxs = getSellTransactions();
+    const tx = sellTxs.find(t => t.id === txId);
+    if (!tx) return;
+
+    const stock = getStock();
+    const soldImeis = tx.units.map(u => u.imei);
+    const returnableUnits = stock.filter(s => s.status === 'TERJUAL' && soldImeis.includes(s.imei));
+
+    if (returnableUnits.length === 0) {
+        selStock.innerHTML = '<option value="">-- Tidak ada unit yang bisa diretur --</option>';
+        return;
+    }
+
+    selStock.innerHTML = returnableUnits.map(u => `
+        <option value="${u.id}">${u.code} - ${u.model} [${u.imei}]</option>
+    `).join('');
+}
+
+function handleReturSellSubmit(event) {
+    event.preventDefault();
+    const txId = document.getElementById('retur-sell-tx-id').value;
+    const stockId = document.getElementById('retur-sell-stock-id').value;
+    const reason = document.getElementById('retur-sell-reason').value;
+    const refund = parseFloat(document.getElementById('retur-sell-refund').value) || 0;
+
+    const sellTxs = getSellTransactions();
+    const tx = sellTxs.find(t => t.id === txId);
+    const stock = getStock();
+    const item = stock.find(s => s.id === stockId);
+    if (!tx || !item) return;
+
+    item.status = 'TERSEDIA';
+    item.notes = `Diretur pelanggan: ${reason}`;
+    saveStock(stock);
+
+    const returJual = getReturJual();
+    const returCode = generateTransactionCode('RJL');
+    returJual.push({
+        id: 'rjl' + (returJual.length + 1),
+        code: returCode,
+        sell_code: tx.code,
+        stock_id: item.id,
+        model: item.model,
+        imei: item.imei,
+        customer_name: tx.customer_name,
+        amount: refund,
+        reason: reason,
+        date: new Date().toISOString()
+    });
+    saveReturJual(returJual);
+
+    const logs = getLogBarang();
+    logs.push({
+        id: 'log' + (logs.length + 1),
+        stock_code: item.code,
+        model: item.model,
+        action: 'RETUR_JUAL',
+        date: new Date().toISOString(),
+        user: 'admin',
+        description: `Retur penjualan dari customer. Alasan: ${reason}`
+    });
+    saveLogBarang(logs);
+
+    const mutations = getMutations();
+    mutations.push({
+        id: 'm-rj' + (mutations.length + 1),
+        date: new Date().toISOString(),
+        module: 'STORE',
+        ref_id: returCode,
+        type: 'KELUAR',
+        category: 'Retur Penjualan',
+        amount: refund,
+        pay_method: tx.pay_method === 'PIUTANG' ? 'CASH' : tx.pay_method,
+        note: `Pengembalian retur ${item.model} ke ${tx.customer_name}`,
+        logged_by: 'admin'
+    });
+    saveMutations(mutations);
+
+    const bankAccounts = getBankAccounts();
+    const account = bankAccounts.find(b => b.id === (tx.pay_method === 'TRANSFER' ? 'bca' : 'cash'));
+    if (account) {
+        account.balance -= refund;
+        saveBankAccounts(bankAccounts);
+    }
+
+    closeModal('modal-retur-sell');
+    alert(`Retur Penjualan ${returCode} berhasil disimpan.`);
+    renderDashboard();
+    renderStockTable();
+}
+
+// --- PENGATURAN TIPE PONSEL ---
+function openPhoneTypesModal() {
+    renderPhoneTypesList();
+    openModal('modal-phone-types');
+}
+
+function renderPhoneTypesList() {
+    const tbody = document.getElementById('phone-types-table-body');
+    if (!tbody) return;
+    const types = getPhoneTypes();
+    tbody.innerHTML = types.map((t, index) => `
+        <tr>
+            <td><strong>${t.name || t}</strong></td>
+            <td style="text-align: center;">
+                <button class="btn btn-danger" onclick="deletePhoneType(${index})" style="padding: 4px 8px; font-size: 11px;">Hapus</button>
+            </td>
+        </tr>
+    `).join('') || '<tr><td colspan="2" style="text-align:center;">Belum ada tipe ponsel master.</td></tr>';
+}
+
+function handlePhoneTypeSubmit(event) {
+    event.preventDefault();
+    const modelInput = document.getElementById('new-phone-model');
+    const modelName = modelInput.value.trim();
+    if (!modelName) return;
+
+    const types = getPhoneTypes();
+    types.push({ name: modelName });
+    savePhoneTypes(types);
+
+    modelInput.value = '';
+    renderPhoneTypesList();
+    alert('Model master tipe ponsel ditambahkan.');
+}
+
+function deletePhoneType(index) {
+    if (!confirm('Hapus tipe ponsel ini dari database master?')) return;
+    const types = getPhoneTypes();
+    types.splice(index, 1);
+    savePhoneTypes(types);
+    renderPhoneTypesList();
+}
+
+// --- SETTING KERTAS PRINTER ---
+function openSetPrintingModal() {
+    const savedSize = localStorage.getItem('print_paper_size') || '58mm';
+    document.getElementById('printing-paper-size').value = savedSize;
+    openModal('modal-set-printing');
+}
+
+function handleSetPrintingSubmit(event) {
+    event.preventDefault();
+    const size = document.getElementById('printing-paper-size').value;
+    localStorage.setItem('print_paper_size', size);
+    
+    applyPrintingStyles(size);
+    
+    closeModal('modal-set-printing');
+    alert(`Ukuran kertas cetak struk diset ke: ${size}`);
+}
+
+function applyPrintingStyles(size) {
+    let styleEl = document.getElementById('printing-custom-style');
+    if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'printing-custom-style';
+        document.head.appendChild(styleEl);
+    }
+    
+    if (size === '58mm') {
+        styleEl.innerHTML = `
+            @media print {
+                body * { visibility: hidden; }
+                #invoice-print-area, #invoice-print-area * { visibility: visible; }
+                #invoice-print-area {
+                    position: absolute;
+                    left: 0; top: 0;
+                    width: 58mm;
+                    font-size: 9px;
+                    line-height: 1.2;
+                    padding: 0;
+                }
+            }
+        `;
+    } else if (size === '80mm') {
+        styleEl.innerHTML = `
+            @media print {
+                body * { visibility: hidden; }
+                #invoice-print-area, #invoice-print-area * { visibility: visible; }
+                #invoice-print-area {
+                    position: absolute;
+                    left: 0; top: 0;
+                    width: 80mm;
+                    font-size: 11px;
+                    line-height: 1.3;
+                    padding: 0;
+                }
+            }
+        `;
+    } else {
+        styleEl.innerHTML = `
+            @media print {
+                body * { visibility: hidden; }
+                #invoice-print-area, #invoice-print-area * { visibility: visible; }
+                #invoice-print-area {
+                    position: absolute;
+                    left: 0; top: 0;
+                    width: 100%;
+                    font-size: 13px;
+                    line-height: 1.4;
+                    padding: 20px;
+                }
+            }
+        `;
+    }
+}
+
 // Initialize on Load
 document.addEventListener('DOMContentLoaded', () => {
     initLiveClock();
     initSidebarEvents();
     renderDashboard();
+    applyPrintingStyles(localStorage.getItem('print_paper_size') || '58mm');
 });
